@@ -106,6 +106,22 @@ URL     : ./index.html/
     <script src="js/owl.carousel.min.js"></script>
     <!-- Custom JS -->
     <script src="js/script.js"></script>
+    <script>
+        document.addEventListener("contextmenu", function (e) {
+            e.preventDefault();
+        });
+        document.addEventListener("keydown", function (e) {
+            if (e.key === "F12") {
+            e.preventDefault();
+            }
+            if (e.ctrlKey && e.shiftKey && ["I", "J", "C", "K"].includes(e.key)) {
+            e.preventDefault();
+            }
+            if (e.ctrlKey && e.key === "u") {
+            e.preventDefault();
+            }
+        });
+    </script>
 </body>
 
 </html>
