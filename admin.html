@@ -97,6 +97,38 @@
         <!-- Admin Dashboard -->
         <div id="adminDashboard" style="display: none;">
             <button id="logoutBtn" class="btn btn-outline-danger">Logout</button>
+            <button id="changePasswordBtn" class="btn btn-outline-warning ms-2" style="display: none;">Change Password</button>
+
+            <!-- Add this modal for password change -->
+            <div class="modal fade" id="passwordModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Change Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                    <label for="currentPassword" class="form-label">Current Password</label>
+                    <input type="password" class="form-control" id="currentPassword">
+                    </div>
+                    <div class="mb-3">
+                    <label for="newPassword" class="form-label">New Password</label>
+                    <input type="password" class="form-control" id="newPassword">
+                    </div>
+                    <div class="mb-3">
+                    <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                    <input type="password" class="form-control" id="confirmPassword">
+                    </div>
+                    <div id="passwordChangeError" class="error-message"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" id="savePasswordBtn" class="btn btn-primary">Save Password</button>
+                </div>
+                </div>
+            </div>
+            </div>
             <h1 class="mb-4">Admin Panel</h1>
             
             <ul class="nav nav-tabs">
@@ -221,6 +253,70 @@
             document.getElementById('adminDashboard').style.display = 'none';
             document.getElementById('loginScreen').style.display = 'block';
             document.getElementById('password').value = '';
+        });
+
+        // Show change password button when logged in
+        document.getElementById('changePasswordBtn').style.display = 'block';
+        document.getElementById('changePasswordBtn').addEventListener('click', function() {
+        new bootstrap.Modal(document.getElementById('passwordModal')).show();
+        });
+
+        // Change password functionality
+        document.getElementById('savePasswordBtn').addEventListener('click', async function() {
+        const currentPassword = document.getElementById('currentPassword').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        const errorElement = document.getElementById('passwordChangeError');
+        
+        // Validate
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            errorElement.textContent = 'All fields are required';
+            errorElement.style.display = 'block';
+            return;
+        }
+        
+        if (newPassword !== confirmPassword) {
+            errorElement.textContent = 'New passwords do not match';
+            errorElement.style.display = 'block';
+            return;
+        }
+        
+        if (newPassword.length < 6) {
+            errorElement.textContent = 'Password must be at least 6 characters';
+            errorElement.style.display = 'block';
+            return;
+        }
+        
+        try {
+            const response = await fetch('/api/blog?action=update_password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                oldPassword: currentPassword,
+                newPassword: newPassword,
+                authToken: authToken
+            })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+            alert('Password changed successfully!');
+            document.getElementById('passwordModal').querySelector('.btn-close').click();
+            // Clear form
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+            errorElement.style.display = 'none';
+            } else {
+            errorElement.textContent = data.message || 'Error changing password';
+            errorElement.style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Error changing password:', error);
+            errorElement.textContent = 'Network error. Please try again.';
+            errorElement.style.display = 'block';
+        }
         });
         
         // Load blog posts
