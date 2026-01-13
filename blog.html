@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<!--
+Page    : blog (SECURE VERSION)
+Version : 2.0
+Author  : Rishies2010
+URL     : ./blog.html
+-->
+
+<head>
+    <title>Blog - NomadLife SMP</title>
+    <meta property="og:title" content="NomadLife Blog" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="NomadLife - Minecraft Server Blog">
+    <meta name="keywords" content="HTML5, bootstrap, mobile, app, landing, ios, android, responsive">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
+    <link rel="shortcut icon" href="/images/favicon/favicon-32x32.png" type="image/x-icon" />
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500" rel="stylesheet">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/themify-icons.css">
+    <link href="/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body data-spy="scroll" data-target="#navbar" data-offset="30">
+    
+    <!-- Nav Menu -->
+    <div class="nav-menu fixed-top">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <nav class="navbar navbar-dark navbar-expand-lg">
+                        <a class="navbar-brand" href="index.html"><img src="/images/nmd_logo.png" class="img-fluid" id="logoimg" alt="logo"></a>
+                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
+                        <div class="collapse navbar-collapse" id="navbar">
+                            <ul class="navbar-nav ml-auto">
+                                <li class="nav-item"> <a class="nav-link" href="/index.html#home">HOME</a> </li>
+                                <li class="nav-item"> <a class="nav-link" href="/index.html#features">FEATURES</a> </li>
+                                <li class="nav-item"> <a class="nav-link active" href="/blog.html">BLOG <span class="sr-only">(current)</span></a> </li>
+                                <li class="nav-item"> <a class="nav-link" href="/index.html#regist">REGISTER</a> </li>
+                                <li class="nav-item"><a href="/index.html#join" class="btn btn-outline-light my-3 my-sm-0 ml-lg-3">Join</a></li>
+                                <li class="nav-item">
+                                    <button id="darkModeToggle" class="btn btn-outline-light my-3 my-sm-0 ml-lg-2" aria-label="Toggle dark mode">
+                                        <i class="fas fa-moon"></i>
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <header class="bg-gradient" id="home">
+        <div class="container mt-5">
+            <h1>NomadLife Blog</h1>
+            <p class="tagline">Updates, Events, and News from our SMP Server</p>
+        </div>
+        <div class="img-holder mt-3"><img src="/images/logo_main.jpg" alt="logo" class="img-fluid"></div>
+    </header>
+
+    <div class="section light-bg">
+        <div class="container">
+            <div class="section-title">
+                <small>LATEST POSTS</small>
+                <h3>What's Happening</h3>
+            </div>
+
+            <div id="blogContainer" class="row">
+                <div class="col-12 text-center" id="loadingMsg">
+                    <p>Loading blog posts...</p>
+                </div>
+            </div>
+
+            <div id="noPosts" class="text-center" style="display: none;">
+                <p class="lead">No blog posts yet. Check back soon!</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="light-bg py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 text-center text-lg-left">
+                    <p class="mb-2"> <span class="ti-game mr-2"></span> The NomadLife SMP.</p>
+                    <div class=" d-block d-sm-inline-block">
+                        <p class="mb-2">
+                            <span class="fa-brands fa-discord mr-2"></span>
+                            <a class="mr-4" href="https://dsc.gg/nomadlife">Discord Server</a>
+                        </p>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center text-lg-right">
+                    <a href="/admin.html" class="btn btn-outline-primary" style="font-size: 11px;">Admin Panel</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-5 text-center">
+        <p class="mb-2"><small>2023 - 2026, <a href="mailto:rishies2010@gmail.com">Rishies2010</a></small></p>
+    </footer>
+
+    <script src="/js/jquery-3.2.1.min.js"></script>
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/script.js"></script>
+    <script>
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        if (currentTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+
+        document.getElementById('darkModeToggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            const icon = this.querySelector('i');
+            if (document.body.classList.contains('dark-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
+        if (currentTheme === 'dark') {
+            const icon = document.querySelector('#darkModeToggle i');
+            icon.classList.remove('fa-moon');
+            icon.classList.add('fa-sun');
+        }
+    </script>
+    <script>
+        // Load blog posts from API
+        async function loadBlogPosts() {
+            const blogContainer = document.getElementById('blogContainer');
+            const loadingMsg = document.getElementById('loadingMsg');
+            const noPosts = document.getElementById('noPosts');
+            
+            try {
+                const response = await fetch('/api/blog?action=get_blogs');
+                const data = await response.json();
+                
+                if (!data.success || !data.blogs || data.blogs.length === 0) {
+                    loadingMsg.style.display = 'none';
+                    noPosts.style.display = 'block';
+                    return;
+                }
+                
+                const blogs = data.blogs;
+                blogs.sort((a, b) => new Date(b.date) - new Date(a.date));
+                
+                blogContainer.innerHTML = '';
+                
+                blogs.forEach(blog => {
+                    const col = document.createElement('div');
+                    col.className = 'col-md-6 col-lg-4 mb-4';
+                    
+                    const dateObj = new Date(blog.date);
+                    const formattedDate = dateObj.toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric' 
+                    });
+                    
+                    col.innerHTML = `
+                        <div class="card features h-100">
+                            <div class="card-body">
+                                <small class="text-muted d-block mb-2">${formattedDate}</small>
+                                <h4 class="card-title">${blog.title}</h4>
+                                <p class="card-text">${blog.excerpt || blog.content.substring(0, 120) + '...'}</p>
+                                <a href="blog-post.html?id=${blog.id}" class="btn btn-primary btn-sm">Read More</a>
+                            </div>
+                        </div>
+                    `;
+                    
+                    blogContainer.appendChild(col);
+                });
+                
+                loadingMsg.style.display = 'none';
+            } catch (error) {
+                console.error('Error loading blogs:', error);
+                loadingMsg.innerHTML = '<p class="text-danger">Error loading blog posts. Please try again later.</p>';
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', loadBlogPosts);
+    </script>
+</body>
+</html>
