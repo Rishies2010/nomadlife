@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+// Vercel Serverless Function for blog API with Blob storage
+import { put, del, list } from '@vercel/blob';
 import crypto from 'crypto';
 
 // Helper to hash password
@@ -8,103 +8,117 @@ function hashPassword(password) {
   return crypto.createHash('sha256').update(password + salt).digest('hex');
 }
 
-// Get blogs directory
-function getBlogsDir() {
-  const dir = path.join('/tmp', 'data', 'blogs');
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-  return dir;
-}
+// BLOB configuration
+const BLOB_STORE_URL = 'https://nomadlife.blob.vercel-storage.com';
 
-// Get config directory
-function getDataDir() {
-  const dir = path.join('/tmp', 'data');
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-  return dir;
-}
+// Blog storage paths
+const CONFIG_BLOB_PATH = 'config.json';
+const BLOG_PREFIX = 'blogs/';
 
-function getConfigPath() {
-  return path.join(getDataDir(), 'config.json');
-}
-
-function loadConfig() {
-  const configPath = getConfigPath();
-  
+// Load config from Blob
+async function loadConfig() {
   try {
-    if (fs.existsSync(configPath)) {
-      const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    const response = await fetch(`${BLOB_STORE_URL}/${CONFIG_BLOB_PATH}`, {
+      headers: {
+        'Authorization': `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}`
+      }
+    });
+    
+    if (response.ok) {
+      const config = await response.json();
       return config;
     }
   } catch (error) {
     console.error('Error loading config:', error);
   }
   
-  // Default config if file doesn't exist or error
-  const defaultConfig = { 
+  // Default config if not exists
+  const defaultConfig = {
     password: hashPassword('admin123'),
-    blogs: [] 
+    lastUpdated: new Date().toISOString()
   };
   
-  try {
-    fs.writeFileSync(configPath, JSON.stringify(defaultConfig, null, 2));
-  } catch (error) {
-    console.error('Error creating default config:', error);
-  }
-  
+  // Save default config
+  await saveConfig(defaultConfig);
   return defaultConfig;
 }
 
-function saveConfig(config) {
+// Save config to Blob
+async function saveConfig(config) {
   try {
-    const configPath = getConfigPath();
-    fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+    const blob = await put(CONFIG_BLOB_PATH, JSON.stringify(config, null, 2), {
+      access: 'public',
+      token: process.env.BLOB_READ_WRITE_TOKEN
+    });
+    return blob;
   } catch (error) {
     console.error('Error saving config:', error);
+    throw error;
   }
 }
 
-function saveBlog(blog) {
+// Load all blogs from Blob
+async function loadAllBlogs() {
   try {
-    const blogsDir = getBlogsDir();
-    const filePath = path.join(blogsDir, `${blog.id}.json`);
-    fs.writeFileSync(filePath, JSON.stringify(blog, null, 2));
-  } catch (error) {
-    console.error('Error saving blog:', error);
-  }
-}
-
-function loadAllBlogs() {
-  try {
-    const blogsDir = getBlogsDir();
+    const { blobs } = await list({
+      prefix: BLOG_PREFIX,
+      token: process.env.BLOB_READ_WRITE_TOKEN
+    });
     
-    if (!fs.existsSync(blogsDir)) {
-      return [];
-    }
-    
-    const files = fs.readdirSync(blogsDir).filter(f => f.endsWith('.json'));
     const blogs = [];
     
-    for (const file of files) {
+    // Fetch each blog file
+    for (const blob of blobs) {
       try {
-        const filePath = path.join(blogsDir, file);
-        const content = fs.readFileSync(filePath, 'utf8');
-        const blog = JSON.parse(content);
-        blogs.push(blog);
+        const response = await fetch(blob.url);
+        if (response.ok) {
+          const blog = await response.json();
+          blogs.push(blog);
+        }
       } catch (error) {
-        console.error(`Error loading blog file ${file}:`, error);
+        console.error(`Error loading blog ${blob.pathname}:`, error);
       }
     }
     
-    return blogs.sort((a, b) => new Date(b.date) - new Date(a.date));
+    // Sort by date, newest first
+    blogs.sort((a, b) => new Date(b.date) - new Date(a.date));
+    return blogs;
   } catch (error) {
     console.error('Error loading blogs:', error);
     return [];
   }
 }
 
+// Save blog to Blob
+async function saveBlog(blog) {
+  try {
+    const blobPath = `${BLOG_PREFIX}${blog.id}.json`;
+    const blob = await put(blobPath, JSON.stringify(blog, null, 2), {
+      access: 'public',
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+      contentType: 'application/json'
+    });
+    return blob;
+  } catch (error) {
+    console.error('Error saving blog:', error);
+    throw error;
+  }
+}
+
+// Delete blog from Blob
+async function deleteBlog(blogId) {
+  try {
+    const blobPath = `${BLOG_PREFIX}${blogId}.json`;
+    await del(blobPath, {
+      token: process.env.BLOB_READ_WRITE_TOKEN
+    });
+  } catch (error) {
+    console.error('Error deleting blog:', error);
+    throw error;
+  }
+}
+
+// Main API handler
 export default async function handler(req, res) {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -127,7 +141,7 @@ export default async function handler(req, res) {
     
     switch (action) {
       case 'get_blogs':
-        const blogs = loadAllBlogs();
+        const blogs = await loadAllBlogs();
         return res.status(200).json({ success: true, blogs });
         
       case 'login':
@@ -137,7 +151,7 @@ export default async function handler(req, res) {
           return res.status(400).json({ success: false, message: 'Password is required' });
         }
         
-        const config = loadConfig();
+        const config = await loadConfig();
         const hashedInput = hashPassword(password);
         
         console.log('Login attempt - Input hash:', hashedInput.substring(0, 10) + '...');
@@ -169,7 +183,7 @@ export default async function handler(req, res) {
           files: Array.isArray(files) ? files : []
         };
         
-        saveBlog(newBlog);
+        await saveBlog(newBlog);
         return res.status(200).json({ success: true, blog: newBlog });
         
       case 'delete_blog':
@@ -183,15 +197,8 @@ export default async function handler(req, res) {
           return res.status(400).json({ success: false, message: 'Blog ID is required' });
         }
         
-        const blogsDir = getBlogsDir();
-        const filePath = path.join(blogsDir, `${blogId}.json`);
-        
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
-          return res.status(200).json({ success: true });
-        } else {
-          return res.status(404).json({ success: false, message: 'Blog not found' });
-        }
+        await deleteBlog(blogId);
+        return res.status(200).json({ success: true });
         
       case 'change_password':
         const { oldPassword, newPassword, authToken: passwordToken } = body;
@@ -200,7 +207,7 @@ export default async function handler(req, res) {
           return res.status(401).json({ success: false, message: 'Unauthorized' });
         }
         
-        const currentConfig = loadConfig();
+        const currentConfig = await loadConfig();
         const hashedOldInput = hashPassword(oldPassword);
         
         if (hashedOldInput !== currentConfig.password) {
@@ -208,7 +215,8 @@ export default async function handler(req, res) {
         }
         
         currentConfig.password = hashPassword(newPassword);
-        saveConfig(currentConfig);
+        currentConfig.lastUpdated = new Date().toISOString();
+        await saveConfig(currentConfig);
         
         return res.status(200).json({ success: true, message: 'Password updated successfully' });
         
@@ -219,7 +227,7 @@ export default async function handler(req, res) {
     console.error('API Error:', error);
     return res.status(500).json({ 
       success: false, 
-      message: 'Server error'
+      message: 'Server error: ' + error.message
     });
   }
 }
