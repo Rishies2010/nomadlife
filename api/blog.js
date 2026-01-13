@@ -23,10 +23,21 @@ function getConfigPath() {
 
 function loadConfig() {
   const configPath = getConfigPath();
+  
   if (fs.existsSync(configPath)) {
-    return JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    try {
+      const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+      return config;
+    } catch (error) {
+      console.error('Error loading config:', error);
+    }
   }
-  return { password: hashPassword('admin123'), blogs: [] };
+  const defaultConfig = { 
+    password: hashPassword('admin123'), // Default password
+    blogs: [] 
+  };
+  saveConfig(defaultConfig);
+  return defaultConfig;
 }
 
 function saveConfig(config) {
@@ -98,18 +109,21 @@ export default async function handler(req, res) {
       case 'create_blog':
         const { title, content, excerpt, files = [], authToken } = req.body;
         
-        // Verify auth token
         if (authToken !== process.env.ADMIN_TOKEN) {
           return res.status(401).json({ success: false, message: 'Unauthorized' });
         }
         
+        if (!title || !content) {
+          return res.status(400).json({ success: false, message: 'Title and content are required' });
+        }
+        
         const newBlog = {
           id: Date.now().toString(),
-          title,
-          content,
-          excerpt: excerpt || content.substring(0, 150) + '...',
+          title: title.trim(),
+          content: content.trim(),
+          excerpt: (excerpt || content.substring(0, 150) + '...').trim(),
           date: new Date().toISOString(),
-          files
+          files: Array.isArray(files) ? files : []
         };
         
         saveBlog(newBlog);
@@ -122,6 +136,10 @@ export default async function handler(req, res) {
           return res.status(401).json({ success: false, message: 'Unauthorized' });
         }
         
+        if (!blogId) {
+          return res.status(400).json({ success: false, message: 'Blog ID is required' });
+        }
+        
         const blogsDir = getBlogsDir();
         const filePath = path.join(blogsDir, `${blogId}.json`);
         
@@ -131,18 +149,19 @@ export default async function handler(req, res) {
         } else {
           return res.status(404).json({ success: false, message: 'Blog not found' });
         }
+        
       case 'change_password':
         const { oldPassword, newPassword, authToken: passwordToken } = req.body;
         
         if (passwordToken !== process.env.ADMIN_TOKEN) {
-            return res.status(401).json({ success: false, message: 'Unauthorized' });
+          return res.status(401).json({ success: false, message: 'Unauthorized' });
         }
         
         const currentConfig = loadConfig();
         const hashedOldInput = hashPassword(oldPassword);
         
         if (hashedOldInput !== currentConfig.password) {
-            return res.status(401).json({ success: false, message: 'Current password is incorrect' });
+          return res.status(401).json({ success: false, message: 'Current password is incorrect' });
         }
         
         currentConfig.password = hashPassword(newPassword);
@@ -151,10 +170,13 @@ export default async function handler(req, res) {
         return res.status(200).json({ success: true, message: 'Password updated successfully' });
         
       default:
-        return res.status(400).json({ success: false, message: 'Invalid action' });
+        return res.status(400).json({ success: false, message: 'Invalid action: ' + action });
     }
   } catch (error) {
     console.error('API Error:', error);
-    return res.status(500).json({ success: false, message: 'Server error' });
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Server error'
+    });
   }
 }
