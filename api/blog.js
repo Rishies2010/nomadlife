@@ -131,6 +131,24 @@ export default async function handler(req, res) {
         } else {
           return res.status(404).json({ success: false, message: 'Blog not found' });
         }
+      case 'change_password':
+        const { oldPassword, newPassword, authToken: passwordToken } = req.body;
+        
+        if (passwordToken !== process.env.ADMIN_TOKEN) {
+            return res.status(401).json({ success: false, message: 'Unauthorized' });
+        }
+        
+        const currentConfig = loadConfig();
+        const hashedOldInput = hashPassword(oldPassword);
+        
+        if (hashedOldInput !== currentConfig.password) {
+            return res.status(401).json({ success: false, message: 'Current password is incorrect' });
+        }
+        
+        currentConfig.password = hashPassword(newPassword);
+        saveConfig(currentConfig);
+        
+        return res.status(200).json({ success: true, message: 'Password updated successfully' });
         
       default:
         return res.status(400).json({ success: false, message: 'Invalid action' });
