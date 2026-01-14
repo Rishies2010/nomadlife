@@ -1,5 +1,5 @@
 // Vercel Serverless Function for blog API with Blob storage
-import { put, del, list, head } from '@vercel/blob';
+import { put, del, list } from '@vercel/blob';
 import crypto from 'crypto';
 
 // Helper to hash password
@@ -15,20 +15,21 @@ const BLOG_PREFIX = 'blogs/';
 // Load config from Blob
 async function loadConfig() {
   try {
-    // Try to get the config blob
+    // List all blobs and find the config
     const { blobs } = await list({
-      prefix: CONFIG_BLOB_PATH,
-      limit: 1,
       token: process.env.BLOB_READ_WRITE_TOKEN
     });
     
-    if (blobs.length > 0) {
+    // Find config blob (pathname ends with config.json)
+    const configBlob = blobs.find(b => b.pathname.includes('config') && b.pathname.endsWith('.json'));
+    
+    if (configBlob) {
       // Config exists, fetch it
-      const response = await fetch(blobs[0].url);
+      const response = await fetch(configBlob.url);
       if (response.ok) {
         const config = await response.json();
-        console.log('Config loaded successfully');
-        return config;
+        console.log('Config loaded successfully from:', configBlob.pathname);
+        return { ...config, _blobUrl: configBlob.url }; // Store URL for updates
       }
     }
   } catch (error) {
@@ -43,20 +44,35 @@ async function loadConfig() {
   };
   
   // Save default config
-  await saveConfig(defaultConfig);
-  return defaultConfig;
+  const savedConfig = await saveConfig(defaultConfig);
+  return savedConfig;
 }
 
 // Save config to Blob
 async function saveConfig(config) {
   try {
-    const blob = await put(CONFIG_BLOB_PATH, JSON.stringify(config, null, 2), {
+    // Remove the _blobUrl if it exists (don't save it)
+    const { _blobUrl, ...configToSave } = config;
+    
+    // If we have an old blob URL, delete it first
+    if (_blobUrl) {
+      try {
+        await del(_blobUrl, {
+          token: process.env.BLOB_READ_WRITE_TOKEN
+        });
+        console.log('Deleted old config');
+      } catch (e) {
+        console.log('Could not delete old config:', e.message);
+      }
+    }
+    
+    const blob = await put(CONFIG_BLOB_PATH, JSON.stringify(configToSave, null, 2), {
       access: 'public',
       token: process.env.BLOB_READ_WRITE_TOKEN,
       contentType: 'application/json'
     });
     console.log('Config saved successfully:', blob.url);
-    return blob;
+    return { ...configToSave, _blobUrl: blob.url };
   } catch (error) {
     console.error('Error saving config:', error);
     throw error;
@@ -67,19 +83,25 @@ async function saveConfig(config) {
 async function loadAllBlogs() {
   try {
     const { blobs } = await list({
-      prefix: BLOG_PREFIX,
       token: process.env.BLOB_READ_WRITE_TOKEN
     });
+    
+    // Filter for blog files (in blogs/ directory)
+    const blogBlobs = blobs.filter(b => 
+      b.pathname.startsWith(BLOG_PREFIX) && 
+      b.pathname.endsWith('.json') &&
+      !b.pathname.includes('config')
+    );
     
     const blogs = [];
     
     // Fetch each blog file
-    for (const blob of blobs) {
+    for (const blob of blogBlobs) {
       try {
         const response = await fetch(blob.url);
         if (response.ok) {
           const blog = await response.json();
-          blogs.push(blog);
+          blogs.push({ ...blog, _blobUrl: blob.url }); // Store URL for deletion
         }
       } catch (error) {
         console.error(`Error loading blog ${blob.pathname}:`, error);
@@ -100,7 +122,11 @@ async function loadAllBlogs() {
 async function saveBlog(blog) {
   try {
     const blobPath = `${BLOG_PREFIX}${blog.id}.json`;
-    const blob = await put(blobPath, JSON.stringify(blog, null, 2), {
+    
+    // Remove _blobUrl if it exists
+    const { _blobUrl, ...blogToSave } = blog;
+    
+    const blob = await put(blobPath, JSON.stringify(blogToSave, null, 2), {
       access: 'public',
       token: process.env.BLOB_READ_WRITE_TOKEN,
       contentType: 'application/json'
@@ -116,21 +142,30 @@ async function saveBlog(blog) {
 // Delete blog from Blob
 async function deleteBlog(blogId) {
   try {
-    const blobPath = `${BLOG_PREFIX}${blogId}.json`;
-    
-    // First, get the URL of the blob to delete
+    // Get all blogs to find the one with matching ID
     const { blobs } = await list({
-      prefix: blobPath,
       token: process.env.BLOB_READ_WRITE_TOKEN
     });
     
-    if (blobs.length > 0) {
-      await del(blobs[0].url, {
+    // Find the blog blob by checking if pathname contains the blog ID
+    const blogBlob = blobs.find(b => 
+      b.pathname.startsWith(BLOG_PREFIX) && 
+      b.pathname.includes(blogId) &&
+      b.pathname.endsWith('.json')
+    );
+    
+    if (blogBlob) {
+      await del(blogBlob.url, {
         token: process.env.BLOB_READ_WRITE_TOKEN
       });
-      console.log('Blog deleted successfully:', blogId);
+      console.log('Blog deleted successfully:', blogId, 'from', blogBlob.url);
+      return true;
     } else {
       console.log('Blog not found:', blogId);
+      // List all blobs for debugging
+      const blogBlobs = blobs.filter(b => b.pathname.startsWith(BLOG_PREFIX));
+      console.log('Available blog blobs:', blogBlobs.map(b => b.pathname));
+      return false;
     }
   } catch (error) {
     console.error('Error deleting blog:', error);
@@ -171,7 +206,9 @@ export default async function handler(req, res) {
     switch (action) {
       case 'get_blogs':
         const blogs = await loadAllBlogs();
-        return res.status(200).json({ success: true, blogs });
+        // Remove _blobUrl from response
+        const cleanBlogs = blogs.map(({ _blobUrl, ...blog }) => blog);
+        return res.status(200).json({ success: true, blogs: cleanBlogs });
         
       case 'login':
         const { password } = body;
@@ -246,8 +283,12 @@ export default async function handler(req, res) {
           return res.status(400).json({ success: false, message: 'Blog ID is required' });
         }
         
-        await deleteBlog(blogId);
-        return res.status(200).json({ success: true });
+        const deleted = await deleteBlog(blogId);
+        if (deleted) {
+          return res.status(200).json({ success: true });
+        } else {
+          return res.status(404).json({ success: false, message: 'Blog not found' });
+        }
         
       case 'change_password':
         const { oldPassword, newPassword, authToken: passwordToken } = body;
@@ -266,8 +307,15 @@ export default async function handler(req, res) {
           return res.status(401).json({ success: false, message: 'Unauthorized' });
         }
         
+        if (!oldPassword || !newPassword) {
+          return res.status(400).json({ success: false, message: 'Old and new passwords are required' });
+        }
+        
         const currentConfig = await loadConfig();
         const hashedOldInput = hashPassword(oldPassword);
+        
+        console.log('Password change - Old hash:', hashedOldInput.substring(0, 10) + '...');
+        console.log('Stored hash:', currentConfig.password.substring(0, 10) + '...');
         
         if (hashedOldInput !== currentConfig.password) {
           return res.status(401).json({ success: false, message: 'Current password is incorrect' });
