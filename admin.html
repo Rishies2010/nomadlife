@@ -226,151 +226,171 @@
 
         ::-webkit-scrollbar-track {
             background: var(--bg-secondary);
-            border-radius: 5px;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: var(--accent-color);
+            background: var(--border-color);
             border-radius: 5px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(122deg, #e54595 0%, #fd378e 100%);
+            background: var(--accent-color);
         }
 
         /* Loading state */
-        .loading {
-            opacity: 0.7;
-            pointer-events: none;
+        body.loading::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .spinner {
-            border: 3px solid var(--border-color);
-            border-top: 3px solid var(--accent-color);
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        body.loading::after {
+            content: 'Loading...';
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-card);
+            padding: 20px 40px;
+            border-radius: 10px;
+            color: var(--text-primary);
+            z-index: 10000;
+            font-weight: 500;
         }
     </style>
 </head>
 <body>
-    <div class="admin-container">
-        <!-- Dark Mode Toggle -->
-        <div class="header-buttons">
-            <div class="dark-mode-toggle" id="darkModeToggle" title="Toggle Dark Mode">
-                <i class="fas fa-moon"></i>
-            </div>
-        </div>
+    <div class="header-buttons">
+        <button id="darkModeToggle" class="dark-mode-toggle" title="Toggle dark mode">
+            <i class="fas fa-moon"></i>
+        </button>
+    </div>
 
-        <!-- Login Screen -->
-        <div id="loginScreen" class="login-card" style="max-width: 400px; margin: 100px auto;">
+    <!-- Login Screen -->
+    <div id="loginScreen" class="admin-container">
+        <div class="login-card col-md-6 mx-auto">
             <h2 class="text-center mb-4">Admin Login</h2>
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" placeholder="Enter admin password">
+            <div class="form-group mb-3">
+                <label for="password">Password</label>
+                <input type="password" id="password" class="form-control" placeholder="Enter admin password">
                 <div id="passwordError" class="error-message"></div>
             </div>
             <button id="loginBtn" class="btn btn-primary w-100">Login</button>
-        </div>
-
-        <!-- Admin Dashboard -->
-        <div id="adminDashboard" style="display: none;">
-            <div class="header-buttons">
-                <button id="logoutBtn" class="btn btn-outline-danger">Logout</button>
-                <button id="changePasswordBtn" class="btn btn-outline-warning">Change Password</button>
+            <div class="text-center mt-3">
+                <a href="/index.html" class="text-muted">Back to Home</a>
             </div>
+        </div>
+    </div>
 
-            <!-- Password Change Modal -->
-            <div class="modal fade" id="passwordModal" tabindex="-1">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Change Password</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="currentPassword" class="form-label">Current Password</label>
-                                <input type="password" class="form-control" id="currentPassword">
-                            </div>
-                            <div class="mb-3">
-                                <label for="newPassword" class="form-label">New Password</label>
-                                <input type="password" class="form-control" id="newPassword">
-                            </div>
-                            <div class="mb-3">
-                                <label for="confirmPassword" class="form-label">Confirm New Password</label>
-                                <input type="password" class="form-control" id="confirmPassword">
-                            </div>
-                            <div id="passwordChangeError" class="error-message"></div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            <button type="button" id="savePasswordBtn" class="btn btn-primary">Save Password</button>
-                        </div>
-                    </div>
+    <!-- Admin Dashboard -->
+    <div id="adminDashboard" class="admin-container" style="display: none;">
+        <div class="admin-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Admin Dashboard</h2>
+                <div>
+                    <button id="changePasswordBtn" class="btn btn-outline-warning me-2">
+                        <i class="fas fa-key"></i> Change Password
+                    </button>
+                    <button id="logoutBtn" class="btn btn-outline-danger">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
                 </div>
             </div>
-            
-            <h1 class="mb-4">Admin Panel</h1>
-            
-            <ul class="nav nav-tabs">
+
+            <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link active" href="#createBlog" data-bs-toggle="tab">Create Post</a>
+                    <a class="nav-link active" data-bs-toggle="tab" href="#createBlog" role="tab">Create Blog Post</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#manageBlogs" data-bs-toggle="tab">Manage Posts</a>
+                    <a class="nav-link" data-bs-toggle="tab" href="#manageBlogs" role="tab">Manage Blogs</a>
                 </li>
             </ul>
 
-            <div class="tab-content">
+            <div class="tab-content mt-4">
                 <!-- Create Blog Tab -->
-                <div class="tab-pane fade show active" id="createBlog">
-                    <div class="admin-card">
-                        <h3 class="mb-4">Create New Blog Post</h3>
-                        <form id="blogForm">
-                            <div class="mb-3">
-                                <label for="blogTitle" class="form-label">Title *</label>
-                                <input type="text" class="form-control" id="blogTitle" required>
-                                <div id="titleError" class="error-message"></div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="blogExcerpt" class="form-label">Excerpt (Optional)</label>
-                                <textarea class="form-control" id="blogExcerpt" rows="2" placeholder="Brief summary of the post"></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <label for="blogContent" class="form-label">Content *</label>
-                                <textarea class="form-control" id="blogContent" rows="10" required placeholder="Write your blog post content here..."></textarea>
-                                <div id="contentError" class="error-message"></div>
-                            </div>
-                            <div class="mb-3" id="fileUploads">
-                                <label class="form-label">File Attachments</label>
+                <div class="tab-pane fade show active" id="createBlog" role="tabpanel">
+                    <form id="blogForm">
+                        <div class="mb-3">
+                            <label for="blogTitle" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="blogTitle" required>
+                            <div id="titleError" class="error-message"></div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="blogExcerpt" class="form-label">Excerpt (Optional)</label>
+                            <input type="text" class="form-control" id="blogExcerpt" placeholder="Short description of the blog post">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="blogContent" class="form-label">Content</label>
+                            <textarea class="form-control" id="blogContent" rows="10" required></textarea>
+                            <div id="contentError" class="error-message"></div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Attached Files (Optional)</label>
+                            <div id="fileUploads">
                                 <div class="input-group mb-2">
                                     <input type="text" class="form-control file-url" placeholder="File URL">
                                     <input type="text" class="form-control file-name ms-2" placeholder="Display Name">
-                                    <button type="button" class="btn btn-outline-secondary remove-file"><i class="fas fa-times"></i></button>
                                 </div>
-                                <button type="button" id="addFileBtn" class="btn btn-sm btn-outline-primary">+ Add Another File</button>
+                                <button type="button" id="addFileBtn" class="btn btn-sm btn-outline-secondary">
+                                    <i class="fas fa-plus"></i> Add Another File
+                                </button>
                             </div>
-                            <button type="submit" class="btn btn-primary">Publish Post</button>
-                        </form>
-                    </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Publish Blog Post
+                        </button>
+                    </form>
                 </div>
 
                 <!-- Manage Blogs Tab -->
-                <div class="tab-pane fade" id="manageBlogs">
-                    <div class="admin-card">
-                        <h3 class="mb-4">Manage Blog Posts</h3>
-                        <div id="blogList">
-                            <!-- Blogs will be loaded here -->
-                        </div>
+                <div class="tab-pane fade" id="manageBlogs" role="tabpanel">
+                    <h4 class="mb-3">Published Blog Posts</h4>
+                    <div id="blogList">
+                        <!-- Blogs will be loaded here -->
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="passwordModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Change Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="currentPassword" class="form-label">Current Password</label>
+                        <input type="password" class="form-control" id="currentPassword">
+                    </div>
+                    <div class="mb-3">
+                        <label for="newPassword" class="form-label">New Password</label>
+                        <input type="password" class="form-control" id="newPassword">
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Confirm New Password</label>
+                        <input type="password" class="form-control" id="confirmPassword">
+                    </div>
+                    <div id="passwordChangeError" class="error-message"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" id="savePasswordBtn" class="btn btn-primary">Save Changes</button>
                 </div>
             </div>
         </div>
@@ -442,6 +462,7 @@
             setLoading(true);
             
             try {
+                console.log('Attempting login...');
                 const response = await fetch('/api/blog?action=login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -449,19 +470,24 @@
                 });
                 
                 const data = await response.json();
+                console.log('Login response:', data);
                 
                 if (data.success) {
                     // Get auth token from environment
+                    console.log('Fetching auth token...');
                     const tokenResponse = await fetch('/api/get-token');
                     const tokenData = await tokenResponse.json();
+                    console.log('Token response:', tokenData);
                     
                     if (tokenData.success) {
                         authToken = tokenData.token;
+                        console.log('Auth token set successfully');
                         document.getElementById('loginScreen').style.display = 'none';
                         document.getElementById('adminDashboard').style.display = 'block';
                         loadBlogs();
                     } else {
-                        showError('passwordError', 'Authentication error');
+                        console.error('Token fetch failed:', tokenData);
+                        showError('passwordError', 'Authentication error: ' + (tokenData.message || 'Unable to get token'));
                     }
                 } else {
                     showError('passwordError', data.message || 'Invalid password');
@@ -516,17 +542,21 @@
             setLoading(true);
             
             try {
+                console.log('Attempting password change...');
+                console.log('Using auth token:', authToken ? 'Token present' : 'NO TOKEN!');
+                
                 const response = await fetch('/api/blog?action=change_password', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
+                    body: JSON.stringify({ 
                         oldPassword: currentPassword,
-                        newPassword: newPassword,
-                        authToken: authToken
+                        newPassword,
+                        authToken 
                     })
                 });
                 
                 const data = await response.json();
+                console.log('Password change response:', data);
                 
                 if (data.success) {
                     alert('Password changed successfully!');
@@ -577,10 +607,8 @@
                     // Add delete event listeners
                     document.querySelectorAll('.delete-blog').forEach(button => {
                         button.addEventListener('click', async function() {
-                            if (confirm('Are you sure you want to delete this blog post?')) {
-                                const blogId = this.getAttribute('data-id');
-                                await deleteBlog(blogId);
-                            }
+                            const blogId = this.getAttribute('data-id');
+                            await deleteBlog(blogId);
                         });
                     });
                 } else {
@@ -603,6 +631,9 @@
             setLoading(true);
             
             try {
+                console.log('Attempting to delete blog:', blogId);
+                console.log('Using auth token:', authToken ? 'Token present' : 'NO TOKEN!');
+                
                 const response = await fetch('/api/blog?action=delete_blog', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -613,10 +644,17 @@
                 });
                 
                 const data = await response.json();
+                console.log('Delete response:', data);
                 
                 if (data.success) {
                     document.getElementById(`blog-${blogId}`).remove();
                     alert('Blog post deleted successfully!');
+                    
+                    // Check if no more blogs
+                    const remainingBlogs = document.querySelectorAll('.blog-item');
+                    if (remainingBlogs.length === 0) {
+                        document.getElementById('blogList').innerHTML = '<p class="text-center text-muted">No blog posts found.</p>';
+                    }
                 } else {
                     alert('Error deleting blog post: ' + (data.message || 'Unknown error'));
                 }
@@ -681,7 +719,7 @@
                 const urlInput = group.querySelector('.file-url');
                 const nameInput = group.querySelector('.file-name');
                 
-                if (urlInput.value.trim() && nameInput.value.trim()) {
+                if (urlInput && nameInput && urlInput.value.trim() && nameInput.value.trim()) {
                     files.push({
                         url: urlInput.value.trim(),
                         name: nameInput.value.trim()
@@ -692,6 +730,9 @@
             setLoading(true);
             
             try {
+                console.log('Creating blog post...');
+                console.log('Using auth token:', authToken ? 'Token present' : 'NO TOKEN!');
+                
                 const response = await fetch('/api/blog?action=create_blog', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -705,6 +746,7 @@
                 });
                 
                 const data = await response.json();
+                console.log('Create blog response:', data);
                 
                 if (data.success) {
                     alert('Blog post created successfully!');
