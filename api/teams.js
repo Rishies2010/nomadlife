@@ -128,7 +128,7 @@ export default async function handler(req, res) {
         return {
           roleId,
           name: teamData.name,
-          leader: teamData.leader,
+          leader: teamData.leader_id,
           leaderName: teamData.leader_name || `User_${teamData.leader}`,
           members: members,
           createdAt: teamData.created_at,
