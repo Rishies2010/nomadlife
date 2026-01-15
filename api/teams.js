@@ -100,14 +100,29 @@ export default async function handler(req, res) {
       const teams = await loadTeams();
       
       // Transform teams data for frontend display
-      const teamsArray = Object.entries(teams).map(([roleId, teamData]) => ({
-        roleId,
-        name: teamData.name,
-        leader: teamData.leader,
-        members: teamData.members || [],
-        createdAt: teamData.created_at,
-        memberCount: (teamData.members || []).length
-      }));
+      const teamsArray = Object.entries(teams).map(([roleId, teamData]) => {
+        // Handle both old format (just IDs) and new format (objects with username)
+        const members = (teamData.members || []).map(member => {
+          if (typeof member === 'object' && member.id && member.username) {
+            return member; // New format
+          }
+          return { id: member, username: null }; // Old format
+        });
+        
+        const leaderData = teamData.leader_data || { 
+          id: teamData.leader, 
+          username: null 
+        };
+        
+        return {
+          roleId,
+          name: teamData.name,
+          leader: leaderData,
+          members: members,
+          createdAt: teamData.created_at,
+          memberCount: members.length
+        };
+      });
       
       // Cache for 1 minute
       res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate');

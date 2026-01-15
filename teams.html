@@ -68,14 +68,16 @@ URL     : https://nomadlife.qzz.io/teams.html
         
         .stats-card {
             background: linear-gradient(135deg, #e38cb7 0%, #ff9ed6 100%);
-            color: white;
+            color: #000;
+            font-weight: 500;
             border-radius: 10px;
             padding: 20px;
             margin-bottom: 30px;
         }
         
         body.dark-mode .stats-card {
-            background: linear-gradient(135deg, #ff9ed6 0%, #e38cb7 100%);
+            background: linear-gradient(135deg, #c76b99 0%, #e38cb7 100%);
+            color: #fff;
         }
         
         .loading-spinner {
@@ -276,14 +278,21 @@ URL     : https://nomadlife.qzz.io/teams.html
                         day: 'numeric'
                     }) : 'Unknown';
                     
-                    // Create member badges (show first 5 members + count if more)
+                    // Create member badges with usernames
                     let memberBadges = '';
                     if (team.members && team.members.length > 0) {
                         const displayMembers = team.members.slice(0, 5);
-                        displayMembers.forEach(memberId => {
-                            const isLeader = memberId === team.leader;
+                        displayMembers.forEach(member => {
+                            const memberId = typeof member === 'object' ? member.id : member;
+                            const memberName = typeof member === 'object' && member.username 
+                                ? member.username 
+                                : `User_${memberId.toString().slice(-4)}`;
+                            
+                            const leaderId = typeof team.leader === 'object' ? team.leader.id : team.leader;
+                            const isLeader = memberId === leaderId;
+                            
                             memberBadges += `<span class="member-badge ${isLeader ? 'leader-badge' : ''}">
-                                ${isLeader ? '<i class="fas fa-crown"></i> ' : ''}User ${memberId.toString().slice(-4)}
+                                ${isLeader ? '<i class="fas fa-crown"></i> ' : ''}${memberName}
                             </span>`;
                         });
                         
