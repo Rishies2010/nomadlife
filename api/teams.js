@@ -10,16 +10,18 @@ async function loadTeams() {
       token: process.env.BLOB_READ_WRITE_TOKEN
     });
     
-    const teamsBlob = blobs.find(b => b.pathname.endsWith('teams.json'));
+    const teamsBlob = blobs.find(b => b.pathname === 'teams.json' || b.pathname.endsWith('teams.json'));
     
     if (teamsBlob) {
       const response = await fetch(teamsBlob.url);
       if (response.ok) {
         const teams = await response.json();
-        console.log('Teams loaded successfully');
+        console.log('Teams loaded successfully from:', teamsBlob.pathname);
         return teams;
       }
     }
+    
+    console.log('No teams found in blob storage yet');
   } catch (error) {
     console.error('Error loading teams:', error);
   }
@@ -31,29 +33,11 @@ async function loadTeams() {
 // Save teams to Blob storage
 async function saveTeams(teamsData) {
   try {
-    // Delete old teams blob first
-    const { blobs } = await list({
-      token: process.env.BLOB_READ_WRITE_TOKEN
-    });
-    
-    const oldTeamsBlob = blobs.find(b => b.pathname.endsWith('teams.json'));
-    if (oldTeamsBlob) {
-      const { del } = await import('@vercel/blob');
-      try {
-        await del(oldTeamsBlob.url, {
-          token: process.env.BLOB_READ_WRITE_TOKEN
-        });
-        console.log('Deleted old teams blob');
-      } catch (e) {
-        console.log('Could not delete old teams:', e.message);
-      }
-    }
-    
-    // Save new teams data
     const blob = await put(TEAMS_BLOB_PATH, JSON.stringify(teamsData, null, 2), {
       access: 'public',
       token: process.env.BLOB_READ_WRITE_TOKEN,
-      contentType: 'application/json'
+      contentType: 'application/json',
+      addRandomSuffix: false
     });
     
     console.log('Teams saved successfully:', blob.url);
