@@ -283,13 +283,12 @@ URL     : https://nomadlife.qzz.io/teams.html
                     if (team.members && team.members.length > 0) {
                         const displayMembers = team.members.slice(0, 5);
                         displayMembers.forEach(member => {
-                            const memberId = typeof member === 'object' ? member.id : member;
-                            const memberName = typeof member === 'object' && member.username 
-                                ? member.username 
-                                : `User_${memberId.toString().slice(-4)}`;
+                            // Handle the member object properly
+                            const memberId = member.id;
+                            const memberName = member.username || `User_${memberId}`;
                             
-                            const leaderId = typeof team.leader === 'object' ? team.leader.id : team.leader;
-                            const isLeader = memberId === leaderId;
+                            // Check if this member is the leader
+                            const isLeader = memberId == team.leader;
                             
                             memberBadges += `<span class="member-badge ${isLeader ? 'leader-badge' : ''}">
                                 ${isLeader ? '<i class="fas fa-crown"></i> ' : ''}${memberName}
