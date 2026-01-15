@@ -112,6 +112,10 @@ export default async function handler(req, res) {
       
       // Transform teams data for frontend display
       const teamsArray = Object.entries(teams).map(([roleId, teamData]) => {
+        // Get leader ID - try leader_id first, then fall back to leader
+        const leaderId = teamData.leader_id || teamData.leader;
+        const leaderName = teamData.leader_name || `User_${leaderId}`;
+        
         // Use member_details if bot sent it, otherwise use basic members array
         let members = [];
         if (teamData.member_details && Array.isArray(teamData.member_details)) {
@@ -127,9 +131,9 @@ export default async function handler(req, res) {
         
         return {
           roleId,
-          name: teamData.name,
-          leader: teamData.leader_id,
-          leaderName: teamData.leader_name || `User_${teamData.leader}`,
+          name: teamData.name || 'undefined',
+          leader: leaderId,
+          leaderName: leaderName,
           members: members,
           createdAt: teamData.created_at,
           memberCount: members.length
