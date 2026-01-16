@@ -1,4 +1,5 @@
 // Vercel Serverless Function for Teams API with Blob storage
+// FIXED VERSION - Preserves Discord ID precision
 import { put, list } from '@vercel/blob';
 
 const TEAMS_BLOB_PATH = 'teams.json';
@@ -120,11 +121,16 @@ export default async function handler(req, res) {
         let members = [];
         if (teamData.member_details && Array.isArray(teamData.member_details)) {
           // Bot sent detailed info with usernames
-          members = teamData.member_details;
+          // CRITICAL: Keep IDs as strings to preserve precision!
+          members = teamData.member_details.map(m => ({
+            id: String(m.id),
+            username: m.username
+          }));
         } else if (teamData.members && Array.isArray(teamData.members)) {
           // Fallback to just IDs
+          // CRITICAL: Keep IDs as strings to preserve precision!
           members = teamData.members.map(id => ({
-            id: id,
+            id: String(id),
             username: `User_${id}`
           }));
         }
@@ -132,7 +138,7 @@ export default async function handler(req, res) {
         return {
           roleId,
           name: teamData.name || 'undefined',
-          leader: leaderId,
+          leader: String(leaderId), // Keep as string
           leaderName: leaderName,
           members: members,
           createdAt: teamData.created_at,
