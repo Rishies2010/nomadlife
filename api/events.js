@@ -110,22 +110,20 @@ export default async function handler(req, res) {
     if (req.method === 'GET') {
       const events = await loadEvents();
       
-      // Filter out past events and sort by start time
-      const now = new Date();
-      const upcomingEvents = events
+      // Filter to show scheduled, active events (hide completed/cancelled)
+      const activeEvents = events
         .filter(event => {
-          if (!event.start_time) return false;
-          const startTime = new Date(event.start_time);
-          return startTime > now || event.status === 'active';
+          // Show if status is scheduled or active, hide completed/cancelled
+          return event.status === 'scheduled' || event.status === 'active';
         })
         .sort((a, b) => new Date(a.start_time) - new Date(b.start_time));
       
       res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate');
       return res.status(200).json({ 
         success: true, 
-        events: upcomingEvents,
+        events: activeEvents,
         totalEvents: events.length,
-        upcomingEvents: upcomingEvents.length
+        upcomingEvents: activeEvents.length
       });
     }
     
