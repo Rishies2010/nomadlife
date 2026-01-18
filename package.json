@@ -2,7 +2,7 @@
   "name": "nomadlife",
   "version": "1.0.0",
   "dependencies": {
-    "@vercel/blob": "^0.19.0"
+    "mysql2": "^3.11.5"
   },
   "engines": {
     "node": "24.x"

@@ -1,133 +1,54 @@
-// Vercel Serverless Function for Player Stats API with Blob storage
-import { put, list } from '@vercel/blob';
+// Vercel Serverless Function for Player Stats API with MySQL
+import mysql from 'mysql2/promise';
 
-const STATS_BLOB_PATH = 'player-stats.json';
-
-// Load player stats from Blob storage
-async function loadStats() {
-  try {
-    const { blobs } = await list({
-      token: process.env.BLOB_READ_WRITE_TOKEN
-    });
-    
-    const statsBlob = blobs.find(b => b.pathname.endsWith('player-stats.json'));
-    
-    if (statsBlob) {
-      const response = await fetch(statsBlob.url);
-      if (response.ok) {
-        const stats = await response.json();
-        console.log('Player stats loaded successfully');
-        return stats;
-      }
-    }
-  } catch (error) {
-    console.error('Error loading player stats:', error);
-  }
-  
-  return [];
+async function getConnection() {
+  return await mysql.createConnection({
+    host: 'panel.freezehost.pro',
+    port: 3306,
+    user: 'u19005_bFu2x8G20Q',
+    password: 'H14r0m=2@NtWjvdsD.E+HLu7',
+    database: 's19005_nomadlife'
+  });
 }
 
-// Save player stats to Blob storage
-async function saveStats(statsData) {
-  try {
-    // Delete old stats blob first
-    const { blobs } = await list({
-      token: process.env.BLOB_READ_WRITE_TOKEN
-    });
-    
-    const oldStatsBlob = blobs.find(b => b.pathname.endsWith('player-stats.json'));
-    if (oldStatsBlob) {
-      const { del } = await import('@vercel/blob');
-      try {
-        await del(oldStatsBlob.url, {
-          token: process.env.BLOB_READ_WRITE_TOKEN
-        });
-        console.log('Deleted old player stats blob');
-      } catch (e) {
-        console.log('Could not delete old stats:', e.message);
-      }
-    }
-    
-    const blob = await put(STATS_BLOB_PATH, JSON.stringify(statsData, null, 2), {
-      access: 'public',
-      token: process.env.BLOB_READ_WRITE_TOKEN,
-      contentType: 'application/json'
-    });
-    
-    console.log('Player stats saved successfully:', blob.url);
-    return blob;
-  } catch (error) {
-    console.error('Error saving player stats:', error);
-    throw error;
-  }
-}
-
-// Main API handler
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
   
-  try {
-    if (!process.env.BLOB_READ_WRITE_TOKEN) {
-      console.error('BLOB_READ_WRITE_TOKEN is not set!');
-      return res.status(500).json({ 
-        success: false, 
-        message: 'Blob storage not configured.' 
-      });
-    }
-    
-    // POST - Minecraft mod updates player stats
-    if (req.method === 'POST') {
-      if (!process.env.BOT_SECRET) {
-        console.error('BOT_SECRET is not set!');
-        return res.status(500).json({ 
-          success: false, 
-          message: 'Bot secret not configured.' 
-        });
-      }
+  if (req.method === 'GET') {
+    let connection;
+    try {
+      connection = await getConnection();
       
-      const authHeader = req.headers.authorization;
-      if (!authHeader || authHeader !== `Bearer ${process.env.BOT_SECRET}`) {
-        console.log('Unauthorized stats update attempt');
-        return res.status(401).json({ success: false, message: 'Unauthorized' });
-      }
+      const [stats] = await connection.execute('SELECT uuid, username, stats_json FROM player_stats ORDER BY username ASC');
       
-      if (!req.body || !Array.isArray(req.body)) {
-        return res.status(400).json({ success: false, message: 'Stats data must be an array' });
-      }
-      
-      await saveStats(req.body);
-      console.log(`Player stats updated - ${req.body.length} players`);
-      return res.status(200).json({ success: true, message: 'Stats updated successfully' });
-    }
-    
-    // GET - Website fetches player stats
-    if (req.method === 'GET') {
-      const stats = await loadStats();
-      
-      // Sort by username
-      stats.sort((a, b) => a.username.localeCompare(b.username));
+      const players = stats.map(s => ({
+        uuid: s.uuid,
+        username: s.username,
+        stats: JSON.parse(s.stats_json || '{}')
+      }));
       
       res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate');
       return res.status(200).json({ 
         success: true, 
-        players: stats,
-        totalPlayers: stats.length
+        players: players,
+        totalPlayers: players.length
       });
+    } catch (error) {
+      console.error('Stats API Error:', error);
+      return res.status(500).json({ 
+        success: false, 
+        message: 'Database error: ' + error.message 
+      });
+    } finally {
+      if (connection) await connection.end();
     }
-    
-    return res.status(405).json({ success: false, message: 'Method not allowed' });
-    
-  } catch (error) {
-    console.error('Stats API Error:', error);
-    return res.status(500).json({ 
-      success: false, 
-      message: 'Server error: ' + error.message 
-    });
   }
+  
+  return res.status(405).json({ success: false, message: 'Method not allowed' });
 }
