@@ -105,7 +105,7 @@ export default async function handler(req, res) {
         if (existing.length > 0) {
           // Update existing record
           await connection.execute(
-            'UPDATE player_stats SET username = ?, stats_json = ?, updated_at = NOW() WHERE uuid = ?',
+            'UPDATE player_stats SET username = ?, stats_json = ?, last_updated = NOW() WHERE uuid = ?',
             [username, statsJson, uuid]
           );
         } else {
