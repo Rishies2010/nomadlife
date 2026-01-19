@@ -89,9 +89,12 @@ async function saveBlog(connection, blog) {
   try {
     const filesJson = JSON.stringify(blog.files || []);
     
+    // Convert ISO datetime to MySQL format
+    const mysqlDate = new Date(blog.date).toISOString().slice(0, 19).replace('T', ' ');
+    
     await connection.execute(
       'INSERT INTO blog_posts (id, title, content, excerpt, date, files_json) VALUES (?, ?, ?, ?, ?, ?)',
-      [blog.id, blog.title, blog.content, blog.excerpt, blog.date, filesJson]
+      [blog.id, blog.title, blog.content, blog.excerpt, mysqlDate, filesJson]
     );
     
     return true;
@@ -238,7 +241,7 @@ export default async function handler(req, res) {
           return res.status(401).json({ success: false, message: 'Unauthorized' });
         }
         
-        if (!oldPassword || newPassword) {
+        if (!oldPassword || !newPassword) {
           return res.status(400).json({ success: false, message: 'Old and new passwords are required' });
         }
         
