@@ -1,5 +1,5 @@
-// Vercel Serverless Function for blog API with Blob storage
-import { put, del, list } from '@vercel/blob';
+// Vercel Serverless Function for Blog API with MySQL
+import mysql from 'mysql2/promise';
 import crypto from 'crypto';
 
 // Helper to hash password
@@ -8,165 +8,108 @@ function hashPassword(password) {
   return crypto.createHash('sha256').update(password + salt).digest('hex');
 }
 
-// Blog storage paths
-const CONFIG_BLOB_PATH = 'config.json';
-const BLOG_PREFIX = 'blogs/';
-
-// Load config from Blob
-async function loadConfig() {
-  try {
-    // List all blobs and find the config
-    const { blobs } = await list({
-      token: process.env.BLOB_READ_WRITE_TOKEN
-    });
-    
-    // Find config blob (pathname ends with config.json)
-    const configBlob = blobs.find(b => b.pathname.includes('config') && b.pathname.endsWith('.json'));
-    
-    if (configBlob) {
-      // Config exists, fetch it
-      const response = await fetch(configBlob.url);
-      if (response.ok) {
-        const config = await response.json();
-        console.log('Config loaded successfully from:', configBlob.pathname);
-        return { ...config, _blobUrl: configBlob.url }; // Store URL for updates
-      }
-    }
-  } catch (error) {
-    console.error('Error loading config:', error);
-  }
-  
-  // Default config if not exists
-  console.log('Creating default config...');
-  const defaultConfig = {
-    password: hashPassword('admin123'),
-    lastUpdated: new Date().toISOString()
-  };
-  
-  // Save default config
-  const savedConfig = await saveConfig(defaultConfig);
-  return savedConfig;
+async function getConnection() {
+  return await mysql.createConnection({
+    host: 'panel.freezehost.pro',
+    port: 3306,
+    user: 'u19005_bFu2x8G20Q',
+    password: 'H14r0m=2@NtWjvdsD.E+HLu7',
+    database: 's19005_nomadlife',
+    supportBigNumbers: true,
+    bigNumberStrings: true
+  });
 }
 
-// Save config to Blob
-async function saveConfig(config) {
+// Load config from database
+async function loadConfig(connection) {
   try {
-    // Remove the _blobUrl if it exists (don't save it)
-    const { _blobUrl, ...configToSave } = config;
-    
-    // If we have an old blob URL, delete it first
-    if (_blobUrl) {
-      try {
-        await del(_blobUrl, {
-          token: process.env.BLOB_READ_WRITE_TOKEN
-        });
-        console.log('Deleted old config');
-      } catch (e) {
-        console.log('Could not delete old config:', e.message);
-      }
-    }
-    
-    const blob = await put(CONFIG_BLOB_PATH, JSON.stringify(configToSave, null, 2), {
-      access: 'public',
-      token: process.env.BLOB_READ_WRITE_TOKEN,
-      contentType: 'application/json'
-    });
-    console.log('Config saved successfully:', blob.url);
-    return { ...configToSave, _blobUrl: blob.url };
-  } catch (error) {
-    console.error('Error saving config:', error);
-    throw error;
-  }
-}
-
-// Load all blogs from Blob
-async function loadAllBlogs() {
-  try {
-    const { blobs } = await list({
-      token: process.env.BLOB_READ_WRITE_TOKEN
-    });
-    
-    // Filter for blog files (in blogs/ directory)
-    const blogBlobs = blobs.filter(b => 
-      b.pathname.startsWith(BLOG_PREFIX) && 
-      b.pathname.endsWith('.json') &&
-      !b.pathname.includes('config')
+    const [rows] = await connection.execute(
+      'SELECT config_key, config_value FROM blog_config'
     );
     
-    const blogs = [];
-    
-    // Fetch each blog file
-    for (const blob of blogBlobs) {
-      try {
-        const response = await fetch(blob.url);
-        if (response.ok) {
-          const blog = await response.json();
-          blogs.push({ ...blog, _blobUrl: blob.url }); // Store URL for deletion
-        }
-      } catch (error) {
-        console.error(`Error loading blog ${blob.pathname}:`, error);
-      }
+    const config = {};
+    for (const row of rows) {
+      config[row.config_key] = row.config_value;
     }
     
-    // Sort by date, newest first
-    blogs.sort((a, b) => new Date(b.date) - new Date(a.date));
-    console.log(`Loaded ${blogs.length} blogs`);
-    return blogs;
+    // If no password exists, create default
+    if (!config.password) {
+      const defaultPassword = hashPassword('admin123');
+      await connection.execute(
+        'INSERT INTO blog_config (config_key, config_value) VALUES (?, ?)',
+        ['password', defaultPassword]
+      );
+      config.password = defaultPassword;
+    }
+    
+    return config;
+  } catch (error) {
+    console.error('Error loading config:', error);
+    return { password: hashPassword('admin123') };
+  }
+}
+
+// Save config to database
+async function saveConfig(connection, key, value) {
+  try {
+    await connection.execute(
+      'INSERT INTO blog_config (config_key, config_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE config_value = ?',
+      [key, value, value]
+    );
+    return true;
+  } catch (error) {
+    console.error('Error saving config:', error);
+    return false;
+  }
+}
+
+// Load all blogs from database
+async function loadAllBlogs(connection) {
+  try {
+    const [blogs] = await connection.execute(
+      'SELECT * FROM blog_posts ORDER BY date DESC'
+    );
+    
+    return blogs.map(blog => ({
+      id: blog.id,
+      title: blog.title,
+      content: blog.content,
+      excerpt: blog.excerpt,
+      date: blog.date,
+      files: blog.files_json ? JSON.parse(blog.files_json) : []
+    }));
   } catch (error) {
     console.error('Error loading blogs:', error);
     return [];
   }
 }
 
-// Save blog to Blob
-async function saveBlog(blog) {
+// Save blog to database
+async function saveBlog(connection, blog) {
   try {
-    const blobPath = `${BLOG_PREFIX}${blog.id}.json`;
+    const filesJson = JSON.stringify(blog.files || []);
     
-    // Remove _blobUrl if it exists
-    const { _blobUrl, ...blogToSave } = blog;
+    await connection.execute(
+      'INSERT INTO blog_posts (id, title, content, excerpt, date, files_json) VALUES (?, ?, ?, ?, ?, ?)',
+      [blog.id, blog.title, blog.content, blog.excerpt, blog.date, filesJson]
+    );
     
-    const blob = await put(blobPath, JSON.stringify(blogToSave, null, 2), {
-      access: 'public',
-      token: process.env.BLOB_READ_WRITE_TOKEN,
-      contentType: 'application/json'
-    });
-    console.log('Blog saved successfully:', blob.url);
-    return blob;
+    return true;
   } catch (error) {
     console.error('Error saving blog:', error);
     throw error;
   }
 }
 
-// Delete blog from Blob
-async function deleteBlog(blogId) {
+// Delete blog from database
+async function deleteBlog(connection, blogId) {
   try {
-    // Get all blogs to find the one with matching ID
-    const { blobs } = await list({
-      token: process.env.BLOB_READ_WRITE_TOKEN
-    });
-    
-    // Find the blog blob by checking if pathname contains the blog ID
-    const blogBlob = blobs.find(b => 
-      b.pathname.startsWith(BLOG_PREFIX) && 
-      b.pathname.includes(blogId) &&
-      b.pathname.endsWith('.json')
+    const [result] = await connection.execute(
+      'DELETE FROM blog_posts WHERE id = ?',
+      [blogId]
     );
     
-    if (blogBlob) {
-      await del(blogBlob.url, {
-        token: process.env.BLOB_READ_WRITE_TOKEN
-      });
-      console.log('Blog deleted successfully:', blogId, 'from', blogBlob.url);
-      return true;
-    } else {
-      console.log('Blog not found:', blogId);
-      // List all blobs for debugging
-      const blogBlobs = blobs.filter(b => b.pathname.startsWith(BLOG_PREFIX));
-      console.log('Available blog blobs:', blogBlobs.map(b => b.pathname));
-      return false;
-    }
+    return result.affectedRows > 0;
   } catch (error) {
     console.error('Error deleting blog:', error);
     throw error;
@@ -175,7 +118,6 @@ async function deleteBlog(blogId) {
 
 // Main API handler
 export default async function handler(req, res) {
-  // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -186,6 +128,7 @@ export default async function handler(req, res) {
   
   const { action } = req.query;
   
+  let connection;
   try {
     let body = {};
     if (req.method === 'POST' && req.body) {
@@ -194,21 +137,12 @@ export default async function handler(req, res) {
     
     console.log('API Action:', action);
     
-    // Check if BLOB token is configured
-    if (!process.env.BLOB_READ_WRITE_TOKEN) {
-      console.error('BLOB_READ_WRITE_TOKEN is not set!');
-      return res.status(500).json({ 
-        success: false, 
-        message: 'Blob storage not configured. Please set BLOB_READ_WRITE_TOKEN in environment variables.' 
-      });
-    }
+    connection = await getConnection();
     
     switch (action) {
       case 'get_blogs':
-        const blogs = await loadAllBlogs();
-        // Remove _blobUrl from response
-        const cleanBlogs = blogs.map(({ _blobUrl, ...blog }) => blog);
-        return res.status(200).json({ success: true, blogs: cleanBlogs });
+        const blogs = await loadAllBlogs(connection);
+        return res.status(200).json({ success: true, blogs });
         
       case 'login':
         const { password } = body;
@@ -217,7 +151,7 @@ export default async function handler(req, res) {
           return res.status(400).json({ success: false, message: 'Password is required' });
         }
         
-        const config = await loadConfig();
+        const config = await loadConfig(connection);
         const hashedInput = hashPassword(password);
         
         console.log('Login attempt - Input hash:', hashedInput.substring(0, 10) + '...');
@@ -232,17 +166,16 @@ export default async function handler(req, res) {
       case 'create_blog':
         const { title, content, excerpt, files = [], authToken } = body;
         
-        // Check auth token
         if (!process.env.ADMIN_TOKEN) {
           console.error('ADMIN_TOKEN is not set!');
           return res.status(500).json({ 
             success: false, 
-            message: 'Admin token not configured. Please set ADMIN_TOKEN in environment variables.' 
+            message: 'Admin token not configured.' 
           });
         }
         
         if (!authToken || authToken !== process.env.ADMIN_TOKEN) {
-          console.log('Auth failed. Provided:', authToken ? 'yes' : 'no', 'Expected:', process.env.ADMIN_TOKEN ? 'yes' : 'no');
+          console.log('Auth failed');
           return res.status(401).json({ success: false, message: 'Unauthorized' });
         }
         
@@ -259,23 +192,22 @@ export default async function handler(req, res) {
           files: Array.isArray(files) ? files : []
         };
         
-        await saveBlog(newBlog);
+        await saveBlog(connection, newBlog);
         return res.status(200).json({ success: true, blog: newBlog });
         
       case 'delete_blog':
         const { blogId, authToken: deleteToken } = body;
         
-        // Check auth token
         if (!process.env.ADMIN_TOKEN) {
           console.error('ADMIN_TOKEN is not set!');
           return res.status(500).json({ 
             success: false, 
-            message: 'Admin token not configured. Please set ADMIN_TOKEN in environment variables.' 
+            message: 'Admin token not configured.' 
           });
         }
         
         if (!deleteToken || deleteToken !== process.env.ADMIN_TOKEN) {
-          console.log('Auth failed. Provided:', deleteToken ? 'yes' : 'no', 'Expected:', process.env.ADMIN_TOKEN ? 'yes' : 'no');
+          console.log('Auth failed');
           return res.status(401).json({ success: false, message: 'Unauthorized' });
         }
         
@@ -283,7 +215,7 @@ export default async function handler(req, res) {
           return res.status(400).json({ success: false, message: 'Blog ID is required' });
         }
         
-        const deleted = await deleteBlog(blogId);
+        const deleted = await deleteBlog(connection, blogId);
         if (deleted) {
           return res.status(200).json({ success: true });
         } else {
@@ -293,25 +225,24 @@ export default async function handler(req, res) {
       case 'change_password':
         const { oldPassword, newPassword, authToken: passwordToken } = body;
         
-        // Check auth token
         if (!process.env.ADMIN_TOKEN) {
           console.error('ADMIN_TOKEN is not set!');
           return res.status(500).json({ 
             success: false, 
-            message: 'Admin token not configured. Please set ADMIN_TOKEN in environment variables.' 
+            message: 'Admin token not configured.' 
           });
         }
         
         if (!passwordToken || passwordToken !== process.env.ADMIN_TOKEN) {
-          console.log('Auth failed. Provided:', passwordToken ? 'yes' : 'no', 'Expected:', process.env.ADMIN_TOKEN ? 'yes' : 'no');
+          console.log('Auth failed');
           return res.status(401).json({ success: false, message: 'Unauthorized' });
         }
         
-        if (!oldPassword || !newPassword) {
+        if (!oldPassword || newPassword) {
           return res.status(400).json({ success: false, message: 'Old and new passwords are required' });
         }
         
-        const currentConfig = await loadConfig();
+        const currentConfig = await loadConfig(connection);
         const hashedOldInput = hashPassword(oldPassword);
         
         console.log('Password change - Old hash:', hashedOldInput.substring(0, 10) + '...');
@@ -321,9 +252,8 @@ export default async function handler(req, res) {
           return res.status(401).json({ success: false, message: 'Current password is incorrect' });
         }
         
-        currentConfig.password = hashPassword(newPassword);
-        currentConfig.lastUpdated = new Date().toISOString();
-        await saveConfig(currentConfig);
+        const hashedNewPassword = hashPassword(newPassword);
+        await saveConfig(connection, 'password', hashedNewPassword);
         
         return res.status(200).json({ success: true, message: 'Password updated successfully' });
         
@@ -336,5 +266,7 @@ export default async function handler(req, res) {
       success: false, 
       message: 'Server error: ' + error.message
     });
+  } finally {
+    if (connection) await connection.end();
   }
 }
