@@ -7,7 +7,9 @@ async function getConnection() {
     port: 3306,
     user: 'u19005_bFu2x8G20Q',
     password: 'H14r0m=2@NtWjvdsD.E+HLu7',
-    database: 's19005_nomadlife'
+    database: 's19005_nomadlife',
+    supportBigNumbers: true,
+    bigNumberStrings: true
   });
 }
 
