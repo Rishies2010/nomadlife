@@ -34,7 +34,7 @@ export default function BlogPage() {
 
       <div className="max-w-6xl mx-auto px-6 py-12">
         {loading ? <Loader /> : !blogs || blogs.length === 0 ? (
-          <Empty icon="?" title="No Posts Yet" sub="Check back soon for updates." />
+          <Empty icon="📝" title="No Posts Yet" sub="Check back soon for updates." />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {blogs.map((b, i) => {

@@ -45,7 +45,7 @@ export default function TeamsPage() {
         />
 
         {loading ? <Loader /> : !data || teams.length === 0 ? (
-          <Empty icon="??" title={search ? "No teams matched" : "No Teams Yet"} sub="Be the first to create a faction." />
+          <Empty icon="⚔️" title={search ? "No teams matched" : "No Teams Yet"} sub="Be the first to create a faction." />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {teams.map((team, i) => {

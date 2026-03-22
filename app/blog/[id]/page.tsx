@@ -30,7 +30,7 @@ export default function BlogPostPage() {
     <div className="min-h-screen">
       <div className="max-w-3xl mx-auto px-6 py-12">
         <Link href="/blog" className="inline-flex items-center gap-2 text-[13px] text-subtle hover:text-violet transition-colors mb-8">
-          Back to Blog
+          ← Back to Blog
         </Link>
 
         {loading ? <Loader /> : error ? (
@@ -38,7 +38,7 @@ export default function BlogPostPage() {
             <div className="text-4xl mb-4">?</div>
             <h2 className="font-display font-bold text-xl text-muted mb-2">Post not found</h2>
             <p className="text-subtle text-sm mb-6">This blog post does not exist or was removed.</p>
-            <Link href="/blog" className="inline-flex items-center gap-2 px-5 py-2.5 bg-purple rounded-full text-white font-semibold text-sm">Back to Blog</Link>
+            <Link href="/blog" className="inline-flex items-center gap-2 px-5 py-2.5 bg-purple rounded-full text-white font-semibold text-sm">← Back to Blog</Link>
           </div>
         ) : post && (
           <article>

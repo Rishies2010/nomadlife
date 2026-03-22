@@ -59,7 +59,7 @@ export default function Nav() {
           rel="noopener noreferrer"
           className="hidden md:flex items-center gap-2 px-5 py-2 bg-purple hover:bg-neon rounded-full text-white text-[13px] font-semibold transition-all duration-200 shadow-[0_0_20px_rgba(124,58,237,0.45)] hover:shadow-[0_0_32px_rgba(124,58,237,0.65)] hover:-translate-y-0.5"
         >
-          <span>+</span> Join Discord
+          <span>◆</span> Join Discord
         </a>
 
         {/* Hamburger */}

@@ -53,7 +53,7 @@ export default function PlayerStatsModal({ player, onClose }: Props) {
             <h2 className="font-display font-bold text-2xl text-nmtext mb-1">{displayName}</h2>
             <p className="text-sm text-subtle">
               {player.java && player.bedrock ? "Java + Bedrock" : player.java ? "Java" : "Bedrock"}
-              {player.discordUsername ? ` - @${player.discordUsername}` : ""}
+              {player.discordUsername ? ` · @${player.discordUsername}` : ""}
             </p>
             <div className="flex gap-2 mt-2 flex-wrap">
               {player.java    && <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase border bg-[rgba(52,211,153,0.1)] text-success border-[rgba(52,211,153,0.22)]">Java</span>}

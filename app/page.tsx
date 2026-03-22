@@ -69,7 +69,7 @@ export default function HomePage() {
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violet/10 border border-purple/30 text-violet text-xs font-bold uppercase tracking-widest mb-8"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse-slow" style={{ boxShadow: "0 0 8px #34d399" }} />
-            Season 3 - Now Live
+            Season 3 · Now Live
           </motion.div>
 
           <motion.div
@@ -214,7 +214,7 @@ export default function HomePage() {
           <Reveal>
             <p className="text-xs font-bold uppercase tracking-widest text-violet mb-3">Get Started</p>
             <h2 className="font-display font-bold tracking-tight text-nmtext mb-4 leading-tight" style={{ fontSize: "clamp(26px,4vw,38px)" }}>
-              Join the Nexus <span className="text-violet">Today</span>
+              Join the Nexus <span className="text-violet">Today</span>
             </h2>
             <p className="text-muted text-base leading-relaxed mb-7">
               Link your Minecraft account on Discord, grab the server IP, and start playing. Takes less than a minute.

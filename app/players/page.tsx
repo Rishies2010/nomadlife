@@ -53,7 +53,7 @@ export default function PlayersPage() {
           onChange={e => setSearch(e.target.value)}
         />
         {loading ? <Loader /> : !players || filtered.length === 0 ? (
-          <Empty icon="?" title="No Players Found" sub={search ? "Try a different search." : "No players registered yet."} />
+          <Empty icon="👤" title="No Players Found" sub={search ? "Try a different search." : "No players registered yet."} />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
             {filtered.map((p, i) => {
