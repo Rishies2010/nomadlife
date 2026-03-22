@@ -237,18 +237,24 @@ export default function HomePage() {
             </div>
           </Reveal>
           <Reveal delay={0.15}>
-            <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(124,58,237,0.22)", boxShadow: "0 8px 48px rgba(124,58,237,0.2)" }}>
-              <div className="flex items-center gap-2.5 px-4 py-3" style={{ background: "#12122a", borderBottom: "1px solid rgba(124,58,237,0.22)" }}>
-                <span className="w-2.5 h-2.5 rounded-full" style={{ background: "#5865f2" }} />
-                <span className="font-display font-semibold text-sm text-nmtext">NomadLife Nexus</span>
+            <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(124,58,237,0.22)", boxShadow: "0 8px 48px rgba(124,58,237,0.2)", background: "#0f0f14" }}>
+              {/* Custom header replaces Discord's ugly one */}
+              <div className="flex items-center gap-3 px-4" style={{ height: 64, background: "url('/images/Nomadlife_Banner.png') center/cover no-repeat", position: "relative" }}>
+                <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.45)" }} />
+                <span className="relative text-2xl">🎮</span>
+                <div className="relative">
+                  <div style={{ fontFamily: "Space Grotesk, sans-serif", fontWeight: 700, fontSize: 16, color: "#fff" }}>NomadLife Nexus</div>
+                  <div style={{ fontWeight: 300, fontSize: 13, color: "rgba(255,255,255,0.75)" }}>The Minecraft Nexus</div>
+                </div>
               </div>
-              <iframe
-                src="https://discord.com/widget?id=1450826853999841323&theme=dark"
-                width="100%"
-                height="300"
-                frameBorder="0"
-                sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
-              />
+              {/* Mask that crops Discord's own header out */}
+              <div style={{ height: 256, overflow: "hidden", position: "relative" }}>
+                <iframe
+                  src="https://discord.com/widget?id=1450826853999841323&theme=dark"
+                  style={{ width: "100%", height: 335, border: "none", position: "absolute", top: -80, left: 0 }}
+                  sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
+                />
+              </div>
             </div>
           </Reveal>
         </div>

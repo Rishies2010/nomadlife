@@ -6,7 +6,8 @@ import { Loader } from "@/components/ui";
 import type { BlogPost } from "@/lib/api";
 
 export default function BlogPostPage() {
-  const { id } = useParams<{ id: string }>();
+  const params = useParams();
+  const id = params?.id as string;
   const [post, setPost]       = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError]     = useState(false);
