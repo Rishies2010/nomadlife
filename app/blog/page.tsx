@@ -59,7 +59,7 @@ export default function BlogPage() {
           </div>
         )}
         <div className="mt-10 text-right">
-          <a href="/admin" className="text-[12px] text-subtle hover:text-violet transition-colors">Admin Panel ?</a>
+          <a href="/admin" className="text-[12px] text-subtle hover:text-violet transition-colors">Admin Panel ↗</a>
         </div>
       </div>
     </div>

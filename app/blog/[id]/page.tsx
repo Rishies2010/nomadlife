@@ -45,7 +45,7 @@ export default function BlogPostPage() {
             <p className="text-[11px] font-bold uppercase tracking-widest text-violet mb-3">
               {new Date(post.date).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
             </p>
-            <h1 className="font-display font-bold text-[clamp(26px,4vw,44px)] tracking-tight text-nmtext mb-10 leading-tight">{post.title}</h1>
+            <h1 className="font-display font-bold text-[clamp(26px,4vw,44px)] tracking-tight text-nmtext mb-10 leading-tight" dangerouslySetInnerHTML={{ __html: post.title }} />
             <div
               className="text-[16px] text-muted leading-[1.85] prose-invert"
               dangerouslySetInnerHTML={{ __html: post.content || "" }}

@@ -341,9 +341,9 @@ export default function AdminPage() {
               {blogs.map(b => (
                 <div key={b.id} className="flex items-start justify-between gap-4 p-4 bg-bg2 border border-[rgba(124,58,237,0.18)] rounded-xl hover:border-[rgba(124,58,237,0.3)] transition-colors">
                   <div className="min-w-0">
-                    <p className="font-display font-semibold text-sm text-nmtext truncate">{b.title}</p>
+                    <p className="font-display font-semibold text-sm text-nmtext truncate" dangerouslySetInnerHTML={{ __html: b.title }} />
                     <p className="text-xs text-subtle mt-0.5">{new Date(b.date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}</p>
-                    {b.excerpt && <p className="text-xs text-muted mt-1 line-clamp-2">{b.excerpt}</p>}
+                    {b.excerpt && <p className="text-xs text-muted mt-1 line-clamp-2" dangerouslySetInnerHTML={{ __html: b.excerpt }} />}
                   </div>
                   <button
                     onClick={() => deleteBlog(b.id)}
