@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
@@ -32,10 +32,10 @@ export default function Nav() {
             src="/images/nomadlife_logo_clear.png"
             alt="NomadLife"
             width={38} height={38}
-            className="drop-shadow-[0_0_10px_rgba(167,139,250,0.6)] group-hover:drop-shadow-[0_0_16px_rgba(167,139,250,0.9)] transition-all duration-300"
-            onError={(e: any) => { e.target.src = "/images/nmd_logo.png"; }}
+            className="  transition-all duration-300"
+            onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/images/nmd_logo.png"; }}
           />
-          <span className="font-display font-bold text-[17px] text-nmtext tracking-tight">
+          <span className="font-display font-bold text-lg text-nmtext tracking-tight">
             Nomad<span className="text-violet">Life</span>
           </span>
         </Link>

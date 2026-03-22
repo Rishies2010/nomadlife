@@ -48,8 +48,8 @@ export default function BlogPage() {
                     <p className="text-[14px] text-muted leading-relaxed flex-1 mb-5">{excerpt}</p>
                     <Link
                       href={`/blog/${b.id}`}
-                      className="inline-flex items-center gap-1.5 px-5 py-2 bg-purple hover:bg-neon rounded-full text-white font-semibold text-[13px] transition-all duration-200 shadow-[0_0_16px_rgba(124,58,237,0.4)] hover:shadow-[0_0_24px_rgba(124,58,237,0.6)] hover:-translate-y-0.5 self-start"
-                    >Read More -></Link>
+                      className="inline-flex items-center gap-1.5 px-5 py-2 bg-purple hover:bg-neon rounded-full text-white font-semibold text-sm transition-all duration-200  hover: hover:-translate-y-0.5 self-start"
+                    >Read More</Link>
                   </Card>
                 </motion.div>
               );
