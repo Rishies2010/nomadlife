@@ -17,7 +17,7 @@ export default function BlogPostPage() {
       .then(d => {
         if (d.success && d.blogs) {
           const found = d.blogs.find((b: BlogPost) => b.id === id);
-          if (found) { setPost(found); if (typeof document !== "undefined") document.title = `${found.title} — NomadLife Nexus`; }
+          if (found) { setPost(found); if (typeof document !== "undefined") document.title = `${found.title} - NomadLife Nexus`; }
           else setError(true);
         } else setError(true);
         setLoading(false);
@@ -29,12 +29,12 @@ export default function BlogPostPage() {
     <div className="min-h-screen">
       <div className="max-w-3xl mx-auto px-6 py-12">
         <Link href="/blog" className="inline-flex items-center gap-2 text-[13px] text-subtle hover:text-violet transition-colors mb-8">
-          ← Back to Blog
+          Back to Blog
         </Link>
 
         {loading ? <Loader /> : error ? (
           <div className="text-center py-20">
-            <div className="text-4xl mb-4">📄</div>
+            <div className="text-4xl mb-4">?</div>
             <h2 className="font-display font-bold text-xl text-muted mb-2">Post not found</h2>
             <p className="text-subtle text-sm mb-6">This blog post doesn't exist or was removed.</p>
             <Link href="/blog" className="inline-flex items-center gap-2 px-5 py-2.5 bg-purple rounded-full text-white font-semibold text-sm">Back to Blog</Link>
@@ -57,9 +57,9 @@ export default function BlogPostPage() {
                     <a key={f.name} href={f.url} download={f.name}
                       className="flex items-center justify-between px-4 py-3 bg-bg1 border border-[rgba(124,58,237,0.22)] rounded-xl hover:border-violet hover:bg-[rgba(167,139,250,0.07)] transition-all duration-200 group">
                       <span className="flex items-center gap-2 text-[14px] text-nmtext">
-                        <span className="text-muted">📎</span> {f.name}
+                        <span className="text-muted">?</span> {f.name}
                       </span>
-                      <span className="text-[12px] text-violet font-semibold group-hover:text-lavender">Download ↓</span>
+                      <span className="text-[12px] text-violet font-semibold group-hover:text-lavender">Download ?</span>
                     </a>
                   ))}
                 </div>

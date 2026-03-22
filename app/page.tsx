@@ -11,12 +11,12 @@ const fadeUp = {
 };
 
 const features = [
-  { icon: "⚔️", title: "Anarchy Server",          desc: "No rules. Pure survival. Build, raid, and survive in a completely open world where only the strongest thrive." },
-  { icon: "🎨", title: "Creative Server",          desc: "Full WorldEdit access. Unlimited blocks. Build your dream structures without any limitations." },
-  { icon: "🌐", title: "Java + Bedrock Crossplay", desc: "Powered by Geyser. Java and Bedrock players share the same world with zero disruptions." },
-  { icon: "🛡️", title: "Faction System",           desc: "Form teams, recruit members, manage your crew from Discord, and dominate the server leaderboard." },
-  { icon: "💬", title: "Discord ↔ MC Chat",        desc: "Chat with in-game players directly from Discord. Never miss a conversation even when you're offline." },
-  { icon: "⚡", title: "Always Online",            desc: "Hosted 24/7 with 99% uptime on private infrastructure. Join whenever the mood hits." },
+  { icon: "\u2694", title: "Anarchy Server",          desc: "No rules. Pure survival. Build, raid, and survive in a completely open world where only the strongest thrive." },
+  { icon: "\uD83C\uDFA8", title: "Creative Server",          desc: "Full WorldEdit access. Unlimited blocks. Build your dream structures without any limitations." },
+  { icon: "\uD83C\uDF10", title: "Java + Bedrock Crossplay", desc: "Powered by Geyser. Java and Bedrock players share the same world with zero disruptions." },
+  { icon: "\uD83D\uDEE1", title: "Faction System",           desc: "Form teams, recruit members, manage your crew from Discord, and dominate the server leaderboard." },
+  { icon: "\uD83D\uDCAC", title: "Discord <-> MC Chat",        desc: "Chat with in-game players directly from Discord. Never miss a conversation even when you're offline." },
+  { icon: "\u26A1", title: "Always Online",            desc: "Hosted 24/7 with 99% uptime on private infrastructure. Join whenever the mood hits." },
 ];
 
 const testimonials = [
@@ -39,16 +39,16 @@ export default function HomePage() {
   }, []);
 
   const stats = [
-    { val: playerCount ?? "—", label: "Players"  },
-    { val: teamCount   ?? "—", label: "Teams"    },
+    { val: playerCount ?? "-", label: "Players"  },
+    { val: teamCount   ?? "-", label: "Teams"    },
     { val: "24/7",             label: "Uptime"   },
     { val: "1.21",             label: "Version"  },
   ];
 
   return (
     <>
-      {/* ── HERO ── */}
-      <section ref={heroRef} className="relative min-h-[92vh] flex flex-col items-center justify-center text-center px-6 overflow-hidden">
+      {/* HERO */}
+      <section ref={heroRef} style={{minHeight:"92vh"}} className="relative flex flex-col items-center justify-center text-center px-6 overflow-hidden">
         {/* Banner bg with parallax */}
         <motion.div
           className="absolute inset-0 z-0"
@@ -75,7 +75,7 @@ export default function HomePage() {
           <motion.div variants={fadeUp} initial="hidden" animate="show" custom={0}
             className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-[rgba(167,139,250,0.09)] border border-[rgba(124,58,237,0.25)] text-violet text-[12px] font-bold uppercase tracking-widest mb-8">
             <span className="w-1.5 h-1.5 rounded-full bg-success shadow-[0_0_8px_#34d399] animate-pulse-slow" />
-            Season 3 · Now Live
+            Season 3 - Now Live
           </motion.div>
 
           {/* NomadLife logo as the big hero element */}
@@ -131,7 +131,7 @@ export default function HomePage() {
 
       <GlowDivider />
 
-      {/* ── FEATURES ── */}
+      {/* FEATURES */}
       <section className="py-20 px-6 max-w-6xl mx-auto">
         <SectionEntrance>
           <div className="mb-11">
@@ -155,7 +155,7 @@ export default function HomePage() {
 
       <GlowDivider />
 
-      {/* ── TESTIMONIALS ── */}
+      {/* TESTIMONIALS */}
       <section className="py-20 px-6 max-w-6xl mx-auto">
         <SectionEntrance>
           <div className="mb-11">
@@ -183,7 +183,7 @@ export default function HomePage() {
 
       <GlowDivider />
 
-      {/* ── JOIN + DISCORD ── */}
+      {/* JOIN + DISCORD */}
       <section className="bg-bg1 border-y border-[rgba(124,58,237,0.22)] py-20 px-6">
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-14 items-center">
           <SectionEntrance>
@@ -228,7 +228,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── FAQ ── */}
+      {/* FAQ */}
       <section className="py-20 px-6 max-w-6xl mx-auto">
         <SectionEntrance>
           <div className="mb-11">

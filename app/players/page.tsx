@@ -48,12 +48,12 @@ export default function PlayersPage() {
       <div className="max-w-6xl mx-auto px-6 py-12">
         <input
           className="w-full max-w-sm mb-8 px-4 py-2.5 bg-bg1 border border-[rgba(124,58,237,0.22)] rounded-xl text-[14px] text-nmtext outline-none focus:border-purple placeholder-subtle transition-colors"
-          placeholder="Search by username or Discord…"
+          placeholder="Search by username or Discord..."
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
         {loading ? <Loader /> : !players || filtered.length === 0 ? (
-          <Empty icon="👤" title="No Players Found" sub={search ? "Try a different search." : "No players registered yet."} />
+          <Empty icon="?" title="No Players Found" sub={search ? "Try a different search." : "No players registered yet."} />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
             {filtered.map((p, i) => {

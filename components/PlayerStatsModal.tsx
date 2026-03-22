@@ -53,7 +53,7 @@ export default function PlayerStatsModal({ player, onClose }: Props) {
             <h2 className="font-display font-bold text-2xl text-nmtext mb-1">{displayName}</h2>
             <p className="text-sm text-subtle">
               {player.java && player.bedrock ? "Java + Bedrock" : player.java ? "Java" : "Bedrock"}
-              {player.discordUsername ? ` · @${player.discordUsername}` : ""}
+              {player.discordUsername ? ` - @${player.discordUsername}` : ""}
             </p>
             <div className="flex gap-2 mt-2 flex-wrap">
               {player.java    && <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase border bg-[rgba(52,211,153,0.1)] text-success border-[rgba(52,211,153,0.22)]">Java</span>}
@@ -63,20 +63,20 @@ export default function PlayerStatsModal({ player, onClose }: Props) {
         </div>
         <button onClick={onClose}
           className="absolute top-5 right-5 w-8 h-8 rounded-lg bg-[rgba(167,139,250,0.08)] border border-[rgba(124,58,237,0.22)] text-muted hover:bg-purple hover:text-white transition-all flex items-center justify-center text-sm">
-          ✕
+          ?
         </button>
 
         {/* Body */}
         <div className="p-6">
           {loading ? <Loader /> : !hasStats ? (
             <div className="text-center py-10">
-              <div className="text-4xl mb-3">📊</div>
+              <div className="text-4xl mb-3">?</div>
               <p className="font-display font-semibold text-muted">No stats recorded yet</p>
               <p className="text-sm text-subtle mt-1">Stats appear after the player has played on the server.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
-              <StatBlock title="⚔️ General" rows={[
+              <StatBlock title="?? General" rows={[
                 ["Play Time",    fmtTime(custom["minecraft:play_time"] || 0)],
                 ["Deaths",       fmtNum(custom["minecraft:deaths"] || 0)],
                 ["Mob Kills",    fmtNum(custom["minecraft:mob_kills"] || 0)],
@@ -84,7 +84,7 @@ export default function PlayerStatsModal({ player, onClose }: Props) {
                 ["Dmg Dealt",    fmtNum(custom["minecraft:damage_dealt"] || 0)],
                 ["Dmg Taken",    fmtNum(custom["minecraft:damage_taken"] || 0)],
               ]} />
-              <StatBlock title="🏃 Travel" rows={[
+              <StatBlock title="? Travel" rows={[
                 ["Walked",   fmtDist(custom["minecraft:walk_one_cm"] || 0)],
                 ["Sprinted", fmtDist(custom["minecraft:sprint_one_cm"] || 0)],
                 ["Flown",    fmtDist(custom["minecraft:fly_one_cm"] || 0)],
@@ -92,9 +92,9 @@ export default function PlayerStatsModal({ player, onClose }: Props) {
                 ["Jumps",    fmtNum(custom["minecraft:jump"] || 0)],
                 ["Fallen",   fmtDist(custom["minecraft:fall_one_cm"] || 0)],
               ]} />
-              {topMined.length > 0 && <StatBlock title="⛏️ Top Mined" rows={topMined.map(([k,v]) => [mcName(k), fmtNum(v)])} />}
-              {topKilled.length > 0 && <StatBlock title="💀 Top Kills" rows={topKilled.map(([k,v]) => [mcName(k), fmtNum(v)])} />}
-              {topCrafted.length > 0 && <StatBlock title="🔨 Top Crafted" rows={topCrafted.map(([k,v]) => [mcName(k), fmtNum(v)])} />}
+              {topMined.length > 0 && <StatBlock title="?? Top Mined" rows={topMined.map(([k,v]) => [mcName(k), fmtNum(v)])} />}
+              {topKilled.length > 0 && <StatBlock title="? Top Kills" rows={topKilled.map(([k,v]) => [mcName(k), fmtNum(v)])} />}
+              {topCrafted.length > 0 && <StatBlock title="? Top Crafted" rows={topCrafted.map(([k,v]) => [mcName(k), fmtNum(v)])} />}
             </div>
           )}
         </div>

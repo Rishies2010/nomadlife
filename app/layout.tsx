@@ -1,18 +1,14 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const space = Space_Grotesk({ subsets: ["latin"], variable: "--font-space" });
-
 export const metadata: Metadata = {
-  title: "NomadLife — The Minecraft Nexus",
+  title: "NomadLife - The Minecraft Nexus",
   description: "Creative + Anarchy | Cross-play Java/Bedrock | 24/7 | Season 3",
   openGraph: {
-    title: "NomadLife — The Minecraft Nexus",
-    description: "Creative + Anarchy | Cross-play Java/Bedrock | 24/7 | Anti-cheat | Discord-MC chat.",
+    title: "NomadLife - The Minecraft Nexus",
+    description: "Creative + Anarchy | Cross-play (Java/Bedrock) | 24/7 | Anti-cheat | Discord-MC chat.",
     images: ["/images/logo_main.jpg"],
     type: "website",
   },
@@ -23,11 +19,15 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${space.variable} font-sans grain`}>
-        {/* Ambient blobs */}
-        <div className="blob w-[700px] h-[700px] bg-purple/10 -top-64 -left-64" />
-        <div className="blob w-[500px] h-[500px] bg-pink/7 bottom-[5%] -right-40" />
-        <div className="blob w-[300px] h-[300px] bg-purple/6 top-[50%] left-[40%]" />
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+      </head>
+      <body className="font-sans">
+        <div className="blob blob-1" />
+        <div className="blob blob-2" />
+        <div className="blob blob-3" />
         <Nav />
         <main className="relative z-10 pt-16">{children}</main>
         <Footer />

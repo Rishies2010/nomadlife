@@ -5,7 +5,7 @@ export function Loader() {
   return (
     <div className="flex flex-col items-center justify-center py-20 gap-4 text-subtle">
       <div className="w-10 h-10 rounded-full border-2 border-[rgba(124,58,237,0.2)] border-t-purple animate-spin" />
-      <span className="text-sm">Loading…</span>
+      <span className="text-sm">Loading...</span>
     </div>
   );
 }
@@ -26,7 +26,7 @@ export function CopyBtn({ text, label = "Copy" }: { text: string; label?: string
     <button
       onClick={() => navigator.clipboard.writeText(text).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1400); })}
       className="px-4 py-2.5 text-xs font-bold text-muted bg-[rgba(167,139,250,0.08)] border-l border-[rgba(124,58,237,0.22)] hover:bg-purple hover:text-white transition-all duration-200"
-    >{copied ? "✓ Copied" : label}</button>
+    >{copied ? "Copied!" : label}</button>
   );
 }
 
@@ -91,7 +91,7 @@ export function FAQ() {
           <button className="w-full px-5 py-4 font-display font-semibold text-sm text-nmtext flex justify-between items-center gap-3 text-left hover:text-lavender transition-colors"
             onClick={() => setOpen(open === i ? null : i)}>
             {it.q}
-            <span className={`text-subtle text-xs flex-shrink-0 transition-transform duration-200 ${open === i ? "rotate-180 text-violet" : ""}`}>▼</span>
+            <span className={`text-subtle text-xs flex-shrink-0 transition-transform duration-200 ${open === i ? "rotate-180 text-violet" : ""}`}>v</span>
           </button>
           <div className={`overflow-hidden transition-all duration-300 ${open === i ? "max-h-40 pb-4" : "max-h-0"}`}>
             <p className="px-5 text-sm text-muted leading-relaxed">{it.a}</p>

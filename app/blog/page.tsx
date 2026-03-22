@@ -34,12 +34,12 @@ export default function BlogPage() {
 
       <div className="max-w-6xl mx-auto px-6 py-12">
         {loading ? <Loader /> : !blogs || blogs.length === 0 ? (
-          <Empty icon="📝" title="No Posts Yet" sub="Check back soon for updates." />
+          <Empty icon="?" title="No Posts Yet" sub="Check back soon for updates." />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {blogs.map((b, i) => {
               const date = new Date(b.date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
-              const excerpt = b.excerpt || (b.content || "").substring(0, 140) + "…";
+              const excerpt = b.excerpt || (b.content || "").substring(0, 140) + "...";
               return (
                 <motion.div key={b.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06, duration: 0.4 }}>
                   <Card className="p-6 h-full flex flex-col">
@@ -49,7 +49,7 @@ export default function BlogPage() {
                     <Link
                       href={`/blog/${b.id}`}
                       className="inline-flex items-center gap-1.5 px-5 py-2 bg-purple hover:bg-neon rounded-full text-white font-semibold text-[13px] transition-all duration-200 shadow-[0_0_16px_rgba(124,58,237,0.4)] hover:shadow-[0_0_24px_rgba(124,58,237,0.6)] hover:-translate-y-0.5 self-start"
-                    >Read More →</Link>
+                    >Read More -></Link>
                   </Card>
                 </motion.div>
               );
@@ -57,7 +57,7 @@ export default function BlogPage() {
           </div>
         )}
         <div className="mt-10 text-right">
-          <a href="/admin" className="text-[12px] text-subtle hover:text-violet transition-colors">Admin Panel ↗</a>
+          <a href="/admin" className="text-[12px] text-subtle hover:text-violet transition-colors">Admin Panel ?</a>
         </div>
       </div>
     </div>
