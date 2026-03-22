@@ -78,11 +78,12 @@ export function FAQ() {
   const [open, setOpen] = useState<number | null>(null);
   const items = [
     { q: "Can I play on both Java and Bedrock?", a: "Yes! We use Geyser so both Java and Bedrock/PE players play together on the same server with no disruptions." },
-    { q: "How do I get whitelisted?", a: "Join our Discord at dsc.gg/nomadlife, go to #verify, and link your Minecraft account with one click. The bot handles whitelisting automatically." },
+    { q: "How do I get whitelisted?", a: "Join our Discord at dsc.gg/nomadlife, go to #verify, and link your Minecraft account with one click. The bot handles whitelisting automatically. Need help? Email mc@nomadlife.qzz.io." },
     { q: "What version is supported?", a: "We run 1.21.11 and support all Java clients from 1.12+, plus all Bedrock versions through Geyser." },
     { q: "What modes are available?", a: "An Anarchy server and a Creative server, both running 24/7. Season 3 is currently active." },
     { q: "Is cheating allowed?", a: "Absolutely not. Anti-Xray and anti-cheat plugins are running. Cheaters get banned automatically." },
     { q: "How do I join a team?", a: "Head to #team-create in Discord after linking. Team leaders approve join requests through the bot." },
+    { q: "How do I contact support?", a: "Email us at mc@nomadlife.qzz.io or reach out on Discord. We typically respond within 24 hours." },
   ];
   return (
     <div className="flex flex-col gap-2">

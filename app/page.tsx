@@ -228,6 +228,10 @@ export default function HomePage() {
                 </div>
               </div>
               <p className="text-xs text-subtle mt-1">Join Discord to get the server IP and get whitelisted.</p>
+              <div className="mt-4">
+                <p className="text-subtle uppercase tracking-wider mb-1.5" style={{ fontSize: 10, fontWeight: 700 }}>Support</p>
+                <a href="mailto:mc@nomadlife.qzz.io" className="font-display text-sm text-violet hover:text-lavender transition-colors font-semibold">mc@nomadlife.qzz.io</a>
+              </div>
             </div>
           </Reveal>
           <Reveal delay={0.15}>
