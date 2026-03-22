@@ -217,7 +217,7 @@ export default function HomePage() {
               Join the Nexus <span className="text-violet">Today</span>
             </h2>
             <p className="text-muted text-base leading-relaxed mb-7">
-              Join our Discord, link your Minecraft account in <b>🔐・verify<\b>, and you will get the server IP. Takes less than a minute.
+              Join our Discord, link your Minecraft account in 🔐・verify, and you will get the server IP. Takes less than a minute.
             </p>
             <div className="flex flex-col gap-3">
               <div>
