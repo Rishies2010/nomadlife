@@ -14,6 +14,7 @@ export const metadata: Metadata = {
     type: "website",
   },
   themeColor: "#7c3aed",
+  alternates: { canonical: "https://www.nomadlife.qzz.io" },
   icons: { icon: "/images/favicon/favicon-32x32.png", apple: "/images/favicon/apple-touch-icon.png" },
 };
 
