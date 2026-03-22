@@ -70,7 +70,7 @@ export default function PlayerStatsModal({ player, onClose }: Props) {
         <div className="p-6">
           {loading ? <Loader /> : !hasStats ? (
             <div className="text-center py-10">
-              <div className="text-4xl mb-3">?</div>
+              <div className="text-4xl mb-3">📊</div>
               <p className="font-display font-semibold text-muted">No stats recorded yet</p>
               <p className="text-sm text-subtle mt-1">Stats appear after the player has played on the server.</p>
             </div>

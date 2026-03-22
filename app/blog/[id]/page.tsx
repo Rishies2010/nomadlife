@@ -35,7 +35,7 @@ export default function BlogPostPage() {
 
         {loading ? <Loader /> : error ? (
           <div className="text-center py-20">
-            <div className="text-4xl mb-4">?</div>
+            <div className="text-4xl mb-4">📄</div>
             <h2 className="font-display font-bold text-xl text-muted mb-2">Post not found</h2>
             <p className="text-subtle text-sm mb-6">This blog post does not exist or was removed.</p>
             <Link href="/blog" className="inline-flex items-center gap-2 px-5 py-2.5 bg-purple rounded-full text-white font-semibold text-sm">← Back to Blog</Link>
