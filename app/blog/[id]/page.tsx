@@ -48,7 +48,7 @@ export default function BlogPostPage() {
             <h1 className="font-display font-bold text-[clamp(26px,4vw,44px)] tracking-tight text-nmtext mb-10 leading-tight">{post.title}</h1>
             <div
               className="text-[16px] text-muted leading-[1.85] prose-invert"
-              dangerouslySetInnerHTML={{ __html: (post.content || "").replace(/\n/g, "<br />") }}
+              dangerouslySetInnerHTML={{ __html: post.content || "" }}
             />
             {post.files && post.files.length > 0 && (
               <div className="mt-12 pt-8 border-t border-[rgba(124,58,237,0.22)]">
@@ -58,9 +58,9 @@ export default function BlogPostPage() {
                     <a key={f.name} href={f.url} download={f.name}
                       className="flex items-center justify-between px-4 py-3 bg-bg1 border border-[rgba(124,58,237,0.22)] rounded-xl hover:border-violet hover:bg-[rgba(167,139,250,0.07)] transition-all duration-200 group">
                       <span className="flex items-center gap-2 text-[14px] text-nmtext">
-                        <span className="text-muted">?</span> {f.name}
+                        <span className="text-muted">📎</span> {f.name}
                       </span>
-                      <span className="text-[12px] text-violet font-semibold group-hover:text-lavender">Download ?</span>
+                      <span className="text-[12px] text-violet font-semibold group-hover:text-lavender">Download ↓</span>
                     </a>
                   ))}
                 </div>

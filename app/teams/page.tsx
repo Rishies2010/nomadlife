@@ -62,7 +62,7 @@ export default function TeamsPage() {
                         const isLeader = String(id) === String(team.leader);
                         return (
                           <span key={String(id)} className={`px-2.5 py-1 rounded-full text-[11px] font-semibold border ${isLeader ? "bg-[rgba(251,191,36,0.1)] border-[rgba(251,191,36,0.3)] text-warning" : "bg-[rgba(124,58,237,0.06)] border-[rgba(124,58,237,0.22)] text-muted"}`}>
-                            {isLeader ? "? " : ""}{name}
+                            {isLeader ? "👑 " : ""}{name}
                           </span>
                         );
                       })}

@@ -39,12 +39,14 @@ export default function BlogPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {blogs.map((b, i) => {
               const date = new Date(b.date).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
-              const excerpt = b.excerpt || (b.content || "").substring(0, 140) + "...";
+              const stripHtml = (html: string) => html.replace(/<[^>]*>/g, "");
+                  const rawExcerpt = b.excerpt || (b.content || "").substring(0, 180);
+                  const excerpt = stripHtml(rawExcerpt).substring(0, 140) + (rawExcerpt.length > 140 ? "..." : "");
               return (
                 <motion.div key={b.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06, duration: 0.4 }}>
                   <Card className="p-6 h-full flex flex-col">
                     <p className="text-[11px] font-bold uppercase tracking-widest text-violet mb-2">{date}</p>
-                    <h3 className="font-display font-bold text-[18px] text-nmtext leading-snug mb-2">{b.title}</h3>
+                    <h3 className="font-display font-bold text-[18px] text-nmtext leading-snug mb-2" dangerouslySetInnerHTML={{ __html: b.title }} />
                     <p className="text-[14px] text-muted leading-relaxed flex-1 mb-5">{excerpt}</p>
                     <Link
                       href={`/blog/${b.id}`}

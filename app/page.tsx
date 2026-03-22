@@ -217,23 +217,17 @@ export default function HomePage() {
               Join the Nexus <span className="text-violet">Today</span>
             </h2>
             <p className="text-muted text-base leading-relaxed mb-7">
-              Link your Minecraft account on Discord, grab the server IP, and start playing. Takes less than a minute.
+              Join our Discord, link your Minecraft account in #verify, and you will get the server IP. Takes less than a minute.
             </p>
             <div className="flex flex-col gap-3">
               <div>
-                <p className="text-subtle uppercase tracking-wider mb-1.5" style={{ fontSize: 10, fontWeight: 700 }}>Java IP</p>
-                <div className="flex max-w-xs overflow-hidden rounded-xl" style={{ background: "#12122a", border: "1px solid rgba(124,58,237,0.22)" }}>
-                  <span className="flex-1 px-4 py-2.5 font-display text-sm text-lavender font-semibold">nomadlife.qzz.io</span>
-                  <CopyBtn text="nomadlife.qzz.io" />
-                </div>
-              </div>
-              <div>
-                <p className="text-subtle uppercase tracking-wider mb-1.5" style={{ fontSize: 10, fontWeight: 700 }}>Discord</p>
+                <p className="text-subtle uppercase tracking-wider mb-1.5" style={{ fontSize: 10, fontWeight: 700 }}>Discord Invite</p>
                 <div className="flex max-w-xs overflow-hidden rounded-xl" style={{ background: "#12122a", border: "1px solid rgba(124,58,237,0.22)" }}>
                   <span className="flex-1 px-4 py-2.5 font-display text-sm text-lavender font-semibold">dsc.gg/nomadlife</span>
                   <CopyBtn text="https://dsc.gg/nomadlife" />
                 </div>
               </div>
+              <p className="text-xs text-subtle mt-1">Join Discord to get the server IP and get whitelisted.</p>
             </div>
           </Reveal>
           <Reveal delay={0.15}>

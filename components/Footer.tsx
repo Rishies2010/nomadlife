@@ -8,7 +8,7 @@ export default function Footer() {
           {" "}· Season 3 · The NomadLife Nexus
         </p>
         <div className="flex gap-5">
-          <a href="https://dsc.gg/nomadlife" target="_blank" rel="noopener noreferrer" className="text-[13px] text-subtle hover:text-violet transition-colors">Discord ?</a>
+          <a href="https://dsc.gg/nomadlife" target="_blank" rel="noopener noreferrer" className="text-[13px] text-subtle hover:text-violet transition-colors">Discord ↗</a>
           <a href="/admin" className="text-[13px] text-subtle hover:text-violet transition-colors">Admin</a>
         </div>
       </div>
