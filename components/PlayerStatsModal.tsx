@@ -63,7 +63,7 @@ export default function PlayerStatsModal({ player, onClose }: Props) {
         </div>
         <button onClick={onClose}
           className="absolute top-5 right-5 w-8 h-8 rounded-lg bg-[rgba(167,139,250,0.08)] border border-[rgba(124,58,237,0.22)] text-muted hover:bg-purple hover:text-white transition-all flex items-center justify-center text-sm">
-          ?
+          ✕
         </button>
 
         {/* Body */}

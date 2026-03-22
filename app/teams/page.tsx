@@ -54,7 +54,7 @@ export default function TeamsPage() {
                 <motion.div key={team.name} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05, duration: 0.4 }}>
                   <Card className="p-5 h-full">
                     <h3 className="font-display font-bold text-[19px] text-nmtext mb-1">{team.name}</h3>
-                    <p className="text-[12px] text-subtle mb-4">{team.memberCount} member{team.memberCount !== 1 ? "s" : ""}{created ? ` ? Since ${created}` : ""}</p>
+                    <p className="text-[12px] text-subtle mb-4">{team.memberCount} member{team.memberCount !== 1 ? "s" : ""}{created ? ` · Since ${created}` : ""}</p>
                     <div className="flex flex-wrap gap-1.5">
                       {(team.members || []).slice(0, 6).map(m => {
                         const id   = typeof m === "object" ? m.id : m;
