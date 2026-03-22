@@ -76,7 +76,7 @@ export default function PlayerStatsModal({ player, onClose }: Props) {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
-              <StatBlock title="?? General" rows={[
+              <StatBlock title="⚔️ General" rows={[
                 ["Play Time",    fmtTime(custom["minecraft:play_time"] || 0)],
                 ["Deaths",       fmtNum(custom["minecraft:deaths"] || 0)],
                 ["Mob Kills",    fmtNum(custom["minecraft:mob_kills"] || 0)],
@@ -84,7 +84,7 @@ export default function PlayerStatsModal({ player, onClose }: Props) {
                 ["Dmg Dealt",    fmtNum(custom["minecraft:damage_dealt"] || 0)],
                 ["Dmg Taken",    fmtNum(custom["minecraft:damage_taken"] || 0)],
               ]} />
-              <StatBlock title="? Travel" rows={[
+              <StatBlock title="🏃 Travel" rows={[
                 ["Walked",   fmtDist(custom["minecraft:walk_one_cm"] || 0)],
                 ["Sprinted", fmtDist(custom["minecraft:sprint_one_cm"] || 0)],
                 ["Flown",    fmtDist(custom["minecraft:fly_one_cm"] || 0)],
@@ -92,9 +92,9 @@ export default function PlayerStatsModal({ player, onClose }: Props) {
                 ["Jumps",    fmtNum(custom["minecraft:jump"] || 0)],
                 ["Fallen",   fmtDist(custom["minecraft:fall_one_cm"] || 0)],
               ]} />
-              {topMined.length > 0 && <StatBlock title="?? Top Mined" rows={topMined.map(([k,v]) => [mcName(k), fmtNum(v)])} />}
-              {topKilled.length > 0 && <StatBlock title="? Top Kills" rows={topKilled.map(([k,v]) => [mcName(k), fmtNum(v)])} />}
-              {topCrafted.length > 0 && <StatBlock title="? Top Crafted" rows={topCrafted.map(([k,v]) => [mcName(k), fmtNum(v)])} />}
+              {topMined.length > 0 && <StatBlock title="⛏️ Top Mined" rows={topMined.map(([k,v]) => [mcName(k), fmtNum(v)])} />}
+              {topKilled.length > 0 && <StatBlock title="💀 Top Kills" rows={topKilled.map(([k,v]) => [mcName(k), fmtNum(v)])} />}
+              {topCrafted.length > 0 && <StatBlock title="🔨 Top Crafted" rows={topCrafted.map(([k,v]) => [mcName(k), fmtNum(v)])} />}
             </div>
           )}
         </div>

@@ -51,12 +51,12 @@ export default function EventsPage() {
                       </span>
                     </div>
                     <div className="text-[13px] text-muted space-y-1 mb-3">
-                      <p>? {date} ? {time}</p>
-                      {ev.location  && <p>? {ev.location}</p>}
-                      {ev.user_count > 0 && <p>? {ev.user_count} interested</p>}
+                      <p>📅 {date} · {time}</p>
+                      {ev.location && <p>📍 {ev.location}</p>}
+                      {ev.user_count > 0 && <p>👥 {ev.user_count} interested</p>}
                     </div>
                     {ev.description && <p className="text-[13px] text-subtle leading-relaxed flex-1">{ev.description}</p>}
-                    <p className="text-[11px] text-subtle mt-3">? {ev.creator}</p>
+                    <p className="text-[11px] text-subtle mt-3">— {ev.creator}</p>
                   </Card>
                 </motion.div>
               );
