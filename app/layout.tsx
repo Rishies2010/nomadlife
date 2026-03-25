@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.nomadlife.qzz.io"),
   title: "NomadLife - The Minecraft Nexus",
-  description: "Creative + Anarchy | Cross-play Java/Bedrock | 24/7 | Season 3",
+  description: "Creative + Anarchy | Cross-play Java/Bedrock | 24/7 | Season 4",
   openGraph: {
     title: "NomadLife - The Minecraft Nexus",
     description: "Creative + Anarchy | Cross-play (Java/Bedrock) | 24/7 | Anti-cheat | Discord-MC chat.",

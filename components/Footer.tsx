@@ -6,7 +6,7 @@ export default function Footer() {
           <p className="text-[13px] text-subtle">
             © 2023–2026{" "}
             <a href="mailto:rishiewas2010@gmail.com" className="hover:text-violet transition-colors">Rishies2010</a>
-            {" "}· Season 3 · The NomadLife Nexus
+            {" "}· Season 4 · The NomadLife Nexus
           </p>
           <a href="mailto:mc@nomadlife.qzz.io" className="text-[12px] text-subtle hover:text-violet transition-colors">mc@nomadlife.qzz.io</a>
         </div>

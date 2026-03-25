@@ -69,7 +69,7 @@ export default function HomePage() {
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-violet/10 border border-purple/30 text-violet text-xs font-bold uppercase tracking-widest mb-8"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse-slow" style={{ boxShadow: "0 0 8px #34d399" }} />
-            Season 3 · Now Live
+            Season 4 · Now Live
           </motion.div>
 
           <motion.div
